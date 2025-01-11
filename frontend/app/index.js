@@ -1,6 +1,13 @@
-import { registerRootComponent } from 'expo';
+import React from 'react';
 import App from '../App';
-import 'react-native-gesture-handler';
+import { NavigationIndependentTree } from '@react-navigation/core';
 
 
-registerRootComponent(App);
+export default function Index() {
+  return (
+    <NavigationIndependentTree>
+        <App />
+    </NavigationIndependentTree>
+
+  );
+}
