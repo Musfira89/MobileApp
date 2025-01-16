@@ -10,10 +10,10 @@ import {
   SafeAreaView,
 } from 'react-native';
 
-const SplashScreen = () => {
+const SplashScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content"  />
+      <StatusBar barStyle="light-content" />
       <View style={styles.curvedContainer}>
         <ImageBackground
           source={require('../assets/images/bgimg.png')}
@@ -32,8 +32,11 @@ const SplashScreen = () => {
               Best Way To Surprise Your Loved Ones
             </Text>
             <Text style={styles.subtitle}>Pic n drop | Dining | Surprises</Text>
-            <TouchableOpacity style={styles.button}>
-              <Text style={styles.buttonText}>Get Started </Text>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => navigation.navigate('RegisterScreen')}
+            >
+              <Text style={styles.buttonText}>Get Started</Text>
             </TouchableOpacity>
           </View>
         </ImageBackground>
@@ -45,16 +48,14 @@ const SplashScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'black', 
+    backgroundColor: 'black',
   },
-  
   curvedContainer: {
     flex: 1,
-    borderRadius: 15, // Keep this if needed
-    overflow: 'hidden', // Ensures children respect borderRadius
-    backgroundColor: 'black', // Matches the theme of the overlay
+    borderRadius: 15,
+    overflow: 'hidden',
+    backgroundColor: 'black',
   },
-  
   backgroundImage: {
     flex: 1,
     resizeMode: 'cover',
@@ -69,9 +70,7 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     zIndex: 1,
-    // backgroundColor: 'rgba(0, 0, 0, 0.5)', // Adjust opacity for your needs
   },
-  
   contentContainer: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -79,7 +78,7 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
   logo: {
-    width: 290, // Increased size
+    width: 290,
     height: 290,
     marginBottom: 30,
     shadowColor: '#000',
@@ -88,12 +87,12 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
   },
   title: {
-    fontSize: 38, // Increased font size
+    fontSize: 38,
     fontWeight: 'bold',
     color: '#FFF',
     textAlign: 'center',
     marginBottom: 15,
-    lineHeight: 45, // Ensures proper spacing between lines
+    lineHeight: 45,
   },
   subtitle: {
     fontSize: 18,
