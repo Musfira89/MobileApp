@@ -34,7 +34,7 @@ const SplashScreen = ({ navigation }) => {
             <Text style={styles.subtitle}>Pic n drop | Dining | Surprises</Text>
             <TouchableOpacity
               style={styles.button}
-              onPress={() => navigation.navigate('RegisterScreen')}
+              onPress={() => navigation.navigate('Signup')}
             >
               <Text style={styles.buttonText}>Get Started</Text>
             </TouchableOpacity>

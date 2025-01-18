@@ -1,69 +1,54 @@
-// Navbar.jsx
 import React from 'react';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { MaterialIcons, FontAwesome5, Entypo } from '@expo/vector-icons';
-// import ExploreScreen from './screens/ExploreScreen';
-// import ReservationsScreen from './screens/ReservationsScreen';
-// import TransportationScreen from './screens/TransportationScreen';
-// import MoreScreen from './screens/MoreScreen';
+import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons'; // Ensure you install `expo-vector-icons` or react-native-vector-icons
 
-const Tab = createBottomTabNavigator();
-
-const Navbar = () => {
+const Navbar = ({ navigation }) => {
   return (
-    <Tab.Navigator
-      screenOptions={{
-        tabBarActiveTintColor: '#FFFFFF',
-        tabBarInactiveTintColor: '#B0B0B0',
-        headerShown: false,
-        tabBarStyle: {
-          backgroundColor: '#000000', // Black background
-          borderTopWidth: 0, // Removes border
-          height: 60, // Adjust height
-        },
-        tabBarLabelStyle: {
-          fontSize: 12, // Adjust label size
-        },
-      }}
-    >
-      <Tab.Screen
-        name="Explore"
-        component={ExploreScreen}
-        options={{
-          tabBarIcon: ({ color }) => (
-            <MaterialIcons name="restaurant-menu" size={24} color={color} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Reservations"
-        component={ReservationsScreen}
-        options={{
-          tabBarIcon: ({ color }) => (
-            <FontAwesome5 name="book" size={20} color={color} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Transportation"
-        component={TransportationScreen}
-        options={{
-          tabBarIcon: ({ color }) => (
-            <MaterialIcons name="directions-car" size={24} color={color} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="More"
-        component={MoreScreen}
-        options={{
-          tabBarIcon: ({ color }) => (
-            <Entypo name="menu" size={24} color={color} />
-          ),
-        }}
-      />
-    </Tab.Navigator>
+    <View style={styles.navbar}>
+      <TouchableOpacity onPress={() => navigation.navigate('Explore')} style={styles.navItem}>
+        <Ionicons name="restaurant" size={24} color="#fff" />
+        <Text style={styles.navText}>Explore</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate('Reservations')} style={styles.navItem}>
+        <Ionicons name="book" size={24} color="#fff" />
+        <Text style={styles.navText}>Reservations</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate('Transportation')} style={styles.navItem}>
+        <Ionicons name="car" size={24} color="#fff" />
+        <Text style={styles.navText}>Transport</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate('More')} style={styles.navItem}>
+        <Ionicons name="menu" size={24} color="#fff" />
+        <Text style={styles.navText}>More</Text>
+      </TouchableOpacity>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  navbar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    backgroundColor: '#000', // Changed to black
+    paddingVertical: 3,
+    paddingHorizontal: 8,
+    borderTopLeftRadius: 1,
+    borderTopRightRadius: 1,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+  },
+  navItem: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  navText: {
+    color: '#fff',
+    fontSize: 12,
+    marginTop: 5,
+  },
+});
 
 export default Navbar;
