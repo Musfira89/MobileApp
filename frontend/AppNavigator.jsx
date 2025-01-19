@@ -21,8 +21,6 @@ const AppNavigator = () => {
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="HomeScreen" component={HomeScreen}/>
         <Stack.Screen name="RestaurantScreen" component={RestaurantScreen} />
-   
-     
      
       </Stack.Navigator>
     </NavigationContainer>

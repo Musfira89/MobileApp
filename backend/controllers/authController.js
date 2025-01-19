@@ -100,13 +100,18 @@ export const checkEmailVerification = async (req, res) => {
 
 // Login Controller
 export const login = async (req, res) => {
-  const { email, password } = req.body;
+  const { token } = req.body;
 
   try {
-    // Firebase Authentication handles login on the frontend.
-    res.status(200).json({ message: "Login successful." });
+    // Verify the token sent from the frontend
+    const decodedToken = await auth.verifyIdToken(token);
+
+    // Extract user information (if needed)
+    const { uid, email } = decodedToken;
+
+    res.status(200).json({ message: "Login successful", user: { uid, email } });
   } catch (error) {
     console.error("Error during login:", error.message);
-    res.status(400).json({ error: error.message });
+    res.status(401).json({ error: "Invalid or expired token" });
   }
 };

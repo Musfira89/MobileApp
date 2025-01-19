@@ -10,7 +10,18 @@ dotenv.config();
 const app = express();
 app.use(bodyParser.json());
 app.use(express.json());
-app.use(cors({ origin: "http://localhost:8081", credentials: true }));
+app.use(
+  cors({
+    origin: [
+      "http://localhost:8081", // Browser frontend
+      "http://192.168.0.117:8081", // Expo app frontend
+    ],
+    credentials: true,
+  })
+);
+
+
+
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/restaurants", restaurantRoutes);

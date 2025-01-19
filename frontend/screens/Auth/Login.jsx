@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {
+import axios from 'axios';import {
   View,
   Text,
   StyleSheet,
@@ -7,35 +7,66 @@ import {
   TouchableOpacity,
   ImageBackground,
   SafeAreaView,
+  Alert
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import app from "../../firebaseConfig"; // Adjust the path as needed
+import API_URL from "../../config";
 
-const Login = ({ navigation }) => { // Add navigation prop here
-  const [password, setPassword] = useState('');
+const Login = ({ navigation }) => {
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  });
   const [isPasswordVisible, setPasswordVisible] = useState(false);
 
+  const handleSubmit = async () => {
+    const auth = getAuth();
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        formData.email,
+        formData.password
+      );
+  
+      const user = userCredential.user;
+  
+      // Send user token to the backend
+      const token = await user.getIdToken();
+  
+      const response = await axios.post(`${API_URL}/api/auth/login`, {
+        token,
+      });
+  
+      if (response.data.message === "Login successful") {
+        Alert.alert("Success", "Login successful");
+        navigation.navigate("HomeScreen");
+      }
+    } catch (error) {
+      Alert.alert("Error", error.message || "Something went wrong!");
+    }
+  };
   return (
     <SafeAreaView style={styles.container}>
-      {/* Background Image with Blur */}
       <ImageBackground
         source={require('../../assets/images/bgimg.png')} // Replace with your background image path
         style={styles.backgroundImage}>
         <View style={styles.overlay} />
 
-        {/* Heading and Subheading */}
         <View style={styles.headerContainer}>
           <Text style={styles.heading}>Continue to login.</Text>
         </View>
 
-        {/* Black Container */}
         <View style={styles.blackContainer}>
-          {/* Input Fields */}
           <View style={styles.inputContainer}>
             <Icon name="mail" size={20} color="#888" style={styles.icon} />
             <TextInput
               style={styles.input}
               placeholder="Email"
               placeholderTextColor="#888"
+              value={formData.email}
+              onChangeText={(value) => setFormData({ ...formData, email: value })}
             />
           </View>
 
@@ -44,14 +75,14 @@ const Login = ({ navigation }) => { // Add navigation prop here
             <TextInput
               style={styles.input}
               placeholder="Password"
-              secureTextEntry={!isPasswordVisible} // Toggle visibility
+              secureTextEntry={!isPasswordVisible}
               placeholderTextColor="#888"
-              value={password}
-              onChangeText={setPassword}
+              value={formData.password}
+              onChangeText={(value) => setFormData({ ...formData, password: value })}
             />
             <TouchableOpacity onPress={() => setPasswordVisible(!isPasswordVisible)}>
               <Icon
-                name={isPasswordVisible ? 'eye-off' : 'eye'} // Change icon based on visibility
+                name={isPasswordVisible ? 'eye-off' : 'eye'}
                 size={20}
                 color="#888"
                 style={styles.iconRight}
@@ -59,24 +90,17 @@ const Login = ({ navigation }) => { // Add navigation prop here
             </TouchableOpacity>
           </View>
 
-          {/* Forgot Password */}
           <TouchableOpacity>
-            <Text style={styles.forgotPassword}>Forgot Password ?</Text>
+            <Text style={styles.forgotPassword}>Forgot Password?</Text>
           </TouchableOpacity>
 
-          {/* Login Button */}
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => navigation.navigate('HomeScreen')}> {/* Navigate to HomeScreen */}
+          <TouchableOpacity style={styles.button} onPress={handleSubmit}>
             <Text style={styles.buttonText}>Login</Text>
           </TouchableOpacity>
 
-          {/* Create Account Prompt */}
           <Text style={styles.createAccountText}>
             Don’t have an account?{' '}
-            <Text
-              style={styles.link}
-              onPress={() => navigation.navigate('Signup')}> {/* Navigate to Signup Screen */}
+            <Text style={styles.link} onPress={() => navigation.navigate('Signup')}>
               Create
             </Text>
           </Text>
@@ -103,7 +127,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)', // Black transparent overlay
+    // backgroundColor: 'rgba(0, 0, 0, 0.6)', // Black transparent overlay
   },
   headerContainer: {
     position: 'absolute',

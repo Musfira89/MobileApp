@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   View,
   Text,
@@ -6,12 +6,12 @@ import {
   ScrollView,
   TextInput,
   TouchableOpacity,
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons'; // For icons
-import RestaurantCard from '../components/Restaurant/RestaurantCard';
-import Header from '../components/Common/Header';
-import Navbar from '../components/Common/Navbar';
-import { getRestaurants } from '../components/Restaurant/RestaurantDetails';
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons"; // For icons
+import RestaurantCard from "../components/Restaurant/RestaurantCard";
+import Header from "../components/Common/Header";
+import Navbar from "../components/Common/Navbar";
+import { getRestaurants } from "../components/Restaurant/RestaurantDetails";
 
 const HomeScreen = ({ navigation }) => {
   const restaurants = getRestaurants(); // Fetch restaurants from the function
@@ -23,7 +23,12 @@ const HomeScreen = ({ navigation }) => {
         <Header title="Welcome back, Sarah" />
         <View style={styles.searchContainer}>
           {/* Search icon */}
-          <Ionicons name="search" size={20} color="#A87729" style={styles.searchIcon} />
+          <Ionicons
+            name="search"
+            size={20}
+            color="#A87729"
+            style={styles.searchIcon}
+          />
           <TextInput
             style={styles.searchInput}
             placeholder="Find your favourite here ..."
@@ -34,13 +39,16 @@ const HomeScreen = ({ navigation }) => {
             <Ionicons name="options" size={20} color="#A87729" />
           </TouchableOpacity>
         </View>
-        <Text style={styles.sectionTitle}>Choose your Favourite Restaurant.</Text>
+        <Text style={styles.sectionTitle}>
+          {" "}
+          Choose your Favourite Restaurant.
+        </Text>
         {restaurants.map((restaurant) => (
           <RestaurantCard
             key={restaurant.id}
             restaurant={restaurant}
             onPress={() =>
-              navigation.navigate('RestaurantDetails', { restaurant })
+              navigation.navigate("RestaurantDetails", { restaurant })
             }
           />
         ))}
@@ -54,23 +62,25 @@ const HomeScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
   },
   scrollContainer: {
     paddingBottom: 20,
     paddingHorizontal: 15,
+    marginTop: 35,
   },
   searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginVertical: 20,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 8,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 3,
     elevation: 3,
+    marginBottom: 35,
   },
   searchIcon: {
     paddingHorizontal: 10,
@@ -79,18 +89,18 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     fontSize: 16,
-    color: '#333',
+    color: "#333",
   },
   filterButton: {
     paddingHorizontal: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 10,
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: 35,
   },
 });
 
