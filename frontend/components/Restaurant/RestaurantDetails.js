@@ -1,24 +1,4 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 
-const restaurants = [
-  {
-    id: 1,
-    name: 'Kababjees | Super Highway',
-    location: 'Karachi',
-    cuisine: 'Chinese | Continental | Seafood | Pizza | Barbeque',
-    rating: 4.6,
-    image: require('../../assets/images/Tandoor.png'), // Replace with your actual image path
-  },
-  {
-    id: 2,
-    name: 'Tandoor | North Nazimabad',
-    location: 'Karachi',
-    cuisine: 'Chinese | Continental | BBQ | Outdoor Buffet',
-    rating: 4.5,
-    image: require('../../assets/images/Tandoor.png'), // Replace with your actual image URLs
-  },
-];
 
 // Function to retrieve all restaurants
 export const getRestaurants = () => restaurants;

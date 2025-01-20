@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -6,90 +6,124 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import Navbar from '../components/Common/Navbar';
+import API_URL from "../config"; 
+import axios from "axios"; 
 
-export default function RestaurantScreen({ navigation }) {
+export default function RestaurantScreen({ route, navigation }) {
+  const { id } = route.params; // Get restaurant ID from navigation route params
+  const [restaurant, setRestaurant] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Fetch restaurant details from the backend
+    const fetchRestaurantDetails = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/api/restaurants/${id}`);
+        setRestaurant(response.data); // Set restaurant details in state
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching restaurant details:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchRestaurantDetails();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="large" color="#FFCC00" />
+      </View>
+    );
+  }
+
+  if (!restaurant) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>Failed to load restaurant details.</Text>
+      </View>
+    );
+  }
+
   return (
-    <ScrollView style={styles.container}>
-      {/* Image Section */}
-      <Image
-        source={require('../assets/images/KababJees.png')}
-        style={styles.image}
-      />
+<ScrollView style={styles.container}>
+  {/* Image Section */}
+  <Image source={{ uri: restaurant.image }} style={styles.image} />
 
-      {/* Content Section */}
-      <View style={styles.contentContainer}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Image
-          source={require('../assets/images/kababjeeslogo.jpg')}
-            style={styles.logo}
-          />
-          <Text style={styles.rating}>
-            4.8/5 <FontAwesome name="star" size={14} color="#FFCC00" />
-          </Text>
-        </View>
+  {/* Content Section */}
+  <View style={styles.contentContainer}>
+    {/* Header */}
+    <View style={styles.header}>
+      <Image source={{ uri: restaurant.logo }} style={styles.logo} />
+      <Text style={styles.rating}>
+        {restaurant.rating}/5 <Text style={styles.stars}>⭐⭐⭐⭐⭐</Text>
+      </Text>
+    </View>
 
-        {/* Restaurant Name */}
-        <Text style={styles.title}>Kababjees | Super Highway</Text>
+    {/* Restaurant Name */}
+    <Text style={styles.title}>{restaurant.name}</Text>
 
-        {/* Location and Call Section */}
-        <View style={styles.locationCallContainer}>
-          <View style={styles.locationCallItem}>
-            <FontAwesome name="map-marker" size={20} color="#fff" />
-            <Text style={styles.address}>
-              Sector 4 B Gulzar E Hijri Scheme 33, Karachi, Pakistan
-            </Text>
-          </View>
+    {/* Location and Call Section */}
+    <View style={styles.locationCallContainer}>
+      <View style={styles.locationCallItem}>
+        <FontAwesome name="map-marker" size={16} color="#A87729" />
+        <Text style={styles.address}>{restaurant.address}</Text>
+      </View>
 
-          <View style={styles.locationCallItem}>
-            <FontAwesome name="phone" size={20} color="#fff" />
-            <TouchableOpacity>
-              <Text style={styles.callText}>Call Restaurant</Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* Divider Line */}
-          <View style={styles.divider} />
-        </View>
-
-        {/* Notes Section */}
-        <View style={styles.section}>
-          <View style={styles.sectionItem}>
-            <FontAwesome name="file-text" size={20} color="#fff" />
-            <Text style={styles.sectionText}>
-              Please be informed of the following for your convenience:
-              Maximum of 6 guests per table.
-            </Text>
-          </View>
-          <View style={styles.divider} />
-        </View>
-
-        {/* Hours Section */}
-        <View style={styles.section}>
-          <View style={styles.sectionItem}>
-            <FontAwesome name="clock" size={20} color="#fff" />
-            <Text style={styles.sectionText}>Monday to Saturday: 3:PM to 10PM</Text>
-          </View>
-          <View style={styles.sectionItem}>
-            <Text style={[styles.sectionText, styles.sundayText]}>Sunday: CLOSED</Text>
-          </View>
-        </View>
-
-
-        {/* Add Menu Button */}
-        <TouchableOpacity style={styles.addButton}>
-          <Text style={styles.addButtonText}>ADD MENU</Text>
+      <View style={styles.locationCallItem}>
+        <FontAwesome name="phone" size={16} color="#A87729" />
+        <TouchableOpacity>
+          <Text style={styles.callText}>Call Restaurant</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Navigation Bar */}
-      <Navbar navigation={navigation} />
-    </ScrollView>
+      {/* Divider Line */}
+      <View style={styles.divider} />
+    </View>
+
+    {/* Notes Section */}
+    <View style={styles.section}>
+      <View style={styles.sectionItem}>
+        <FontAwesome name="file-text" size={15} color="#A87729" />
+        <Text style={styles.sectionHeading}>NOTES FROM THE RESTAURANT</Text>
+      </View>
+      <Text style={styles.sectionText}>{restaurant.guidelines}</Text>
+      <View style={styles.divider} />
+    </View>
+
+    {/* Hours Section */}
+    <View style={styles.section}>
+      <View style={styles.sectionItem}>
+      <FontAwesome name="file-text" size={15} color="#A87729" />
+        <Text style={styles.sectionHeading}>HOURS OF OPERATION</Text>
+      </View>
+      {restaurant.hours &&
+        Object.entries(restaurant.hours).map(([day, hours]) => (
+          <View key={day} style={styles.hoursRow}>
+            <Text style={styles.dayText}>{day}</Text>
+            <Text style={styles.hoursText}>{hours}</Text>
+          </View>
+        ))}
+    </View>
+
+    {/* Add Menu Button */}
+    <TouchableOpacity style={styles.addButton}>
+      <Text style={styles.addButtonText}>RESERVE A DINNING</Text>
+    </TouchableOpacity>
+  </View>
+
+  {/* Navigation Bar */}
+  <Navbar navigation={navigation} />
+</ScrollView>
+
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
@@ -102,28 +136,28 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
   },
   contentContainer: {
-    padding: 16,
+    padding: 15,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   logo: {
-    width: 100,
+    width: 150,
     height: 90,
     resizeMode: 'contain',
-    marginRight: 'auto', // Pushes the logo to the left
+    marginRight: 'auto',
   },
   rating: {
-    color: '#FFCC00',
+    color: '#fff',
     fontSize: 16,
-    marginLeft: 'auto', // Pushes the rating to the right
+    marginLeft: 'auto',
   },
   title: {
-    fontSize: 24,
+    fontSize: 34, // Reduced font size
     fontWeight: 'bold',
     color: '#fff',
-    marginVertical: 8,
+    marginVertical: 5, // Reduced space
   },
   locationCallContainer: {
     marginTop: 8,
@@ -131,17 +165,17 @@ const styles = StyleSheet.create({
   locationCallItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 8, // Reduced space between the items
+    marginVertical: 8,
   },
   address: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 14,
     marginLeft: 8,
     flex: 1,
   },
   callText: {
-    color: '#1E90FF',
-    fontSize: 16,
+    color: '#fff',
+    fontSize: 14,
     marginLeft: 8,
   },
   icon: {
@@ -155,31 +189,51 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 8,
   },
+  sectionHeading: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginLeft: 8,
+  },
   sectionText: {
     color: '#ccc',
     fontSize: 14,
-    marginLeft: 8,
-  },
-  sundayText: {
-    color: '#FF6347',
+    marginTop: 4, 
+    marginBottom:15,
   },
   divider: {
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
-    marginVertical: 8, // Reduced spacing
+    marginVertical: 8,
   },
   addButton: {
     backgroundColor: '#FF0000',
     borderRadius: 5,
-    paddingVertical: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 100,
     alignItems: 'center',
-    marginTop: 16,
-    alignSelf: 'flex-end',
-    paddingHorizontal: 20,
+
+    alignSelf: 'center', // Centered the button
   },
   addButtonText: {
     color: '#fff',
     fontSize: 14,
     fontWeight: 'bold',
+  },
+  hoursRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 4,
+  },
+  dayText: {
+    color: '#ccc',
+    fontSize: 14,
+    flex: 1,
+  },
+  hoursText: {
+    color: '#ccc',
+    fontSize: 14,
+    textAlign: 'right',
+    flex: 1,
   },
 });

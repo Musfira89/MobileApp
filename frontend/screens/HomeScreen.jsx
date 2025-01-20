@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -11,10 +11,26 @@ import { Ionicons } from "@expo/vector-icons"; // For icons
 import RestaurantCard from "../components/Restaurant/RestaurantCard";
 import Header from "../components/Common/Header";
 import Navbar from "../components/Common/Navbar";
-import { getRestaurants } from "../components/Restaurant/RestaurantDetails";
+
+import axios from "axios"; 
+import API_URL from "../config"; 
 
 const HomeScreen = ({ navigation }) => {
-  const restaurants = getRestaurants(); // Fetch restaurants from the function
+  const [restaurants, setRestaurants] = useState([]); 
+
+  // Fetch restaurants from the API
+  const getRestaurants = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/api/restaurants`);
+      setRestaurants(response.data); 
+    } catch (error) {
+      console.error("Error fetching restaurants:", error);
+    }
+  };
+
+  useEffect(() => {
+    getRestaurants(); 
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -40,18 +56,21 @@ const HomeScreen = ({ navigation }) => {
           </TouchableOpacity>
         </View>
         <Text style={styles.sectionTitle}>
-          {" "}
           Choose your Favourite Restaurant.
         </Text>
-        {restaurants.map((restaurant) => (
-          <RestaurantCard
-            key={restaurant.id}
-            restaurant={restaurant}
-            onPress={() =>
-              navigation.navigate("RestaurantDetails", { restaurant })
-            }
-          />
-        ))}
+        {restaurants.length > 0 ? (
+          restaurants.map((restaurant) => (
+            <RestaurantCard
+              key={restaurant.id}
+              restaurant={restaurant}
+              onPress={() =>
+                navigation.navigate("RestaurantScreen", { id: restaurant.id })
+              }
+            />
+          ))
+        ) : (
+          <Text>No restaurants found.</Text> // Show message if no restaurants found
+        )}
       </ScrollView>
       {/* Navbar at the bottom */}
       <Navbar navigation={navigation} />
