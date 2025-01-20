@@ -111,7 +111,7 @@ const Signup = () => {
             {/* Phone Number */}
             <View style={styles.inputContainer}>
               <Image
-                source={require("../../assets/images/flagIcon.png")} // Adjust path accordingly
+                source={require("../../assets/images/flagIcon.jpg")} // Adjust path accordingly
                 style={styles.flagIcon}
               />
               <Text style={styles.phoneCode}>+92</Text>

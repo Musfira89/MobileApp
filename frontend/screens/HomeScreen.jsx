@@ -9,34 +9,39 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons"; // For icons
 import RestaurantCard from "../components/Restaurant/RestaurantCard";
-import Header from "../components/Common/Header";
 import Navbar from "../components/Common/Navbar";
+import axios from "axios";
+import API_URL from "../config";
+import WelcomeHeader from '../components/Common/WelcomeHeader'
 
-import axios from "axios"; 
-import API_URL from "../config"; 
 
 const HomeScreen = ({ navigation }) => {
-  const [restaurants, setRestaurants] = useState([]); 
+  const [restaurants, setRestaurants] = useState([]);
 
   // Fetch restaurants from the API
   const getRestaurants = async () => {
     try {
       const response = await axios.get(`${API_URL}/api/restaurants`);
-      setRestaurants(response.data); 
+      setRestaurants(response.data);
     } catch (error) {
       console.error("Error fetching restaurants:", error);
     }
   };
 
   useEffect(() => {
-    getRestaurants(); 
+    getRestaurants();
   }, []);
 
   return (
     <View style={styles.container}>
       {/* Entire screen wrapped in a ScrollView */}
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <Header title="Welcome back, Sarah" />
+
+        <View style={styles.header}>
+        <WelcomeHeader />
+        </View>
+
+
         <View style={styles.searchContainer}>
           {/* Search icon */}
           <Ionicons
@@ -88,6 +93,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     marginTop: 35,
   },
+  header: {
+    marginVertical: 10, // Reduced top and bottom spacing
+    paddingHorizontal: 15, // Add some left and right spacing
+  },
+
   searchContainer: {
     flexDirection: "row",
     alignItems: "center",

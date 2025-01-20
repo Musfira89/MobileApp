@@ -1,31 +1,27 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons'; // Icon library
 
-const Header = ({ title }) => {
+const Header = ({ onBackPress }) => {
   return (
     <View style={styles.header}>
-      <Text style={styles.title}>{title}</Text>
-      <Text style={styles.subtitle}>Start Planning a Surprise</Text>
+      <TouchableOpacity style={styles.backButton} onPress={onBackPress}>
+        <Ionicons name="chevron-back" size={24} color="white" />
+      </TouchableOpacity>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   header: {
-    marginVertical: 10, // Reduced top and bottom spacing
-    paddingHorizontal: 15, // Add some left and right spacing
+    backgroundColor: '#000', 
+    height: 70, 
+    justifyContent: 'center', 
+    paddingHorizontal: 10, 
   },
-  title: {
-    fontSize: 24, // Font size for the title
-    fontWeight: 'bold',
-    color: '#000', // Black text color
-    textAlign: 'left', // Left-aligned text
-  },
-  subtitle: {
-    fontSize: 16, // Font size for the subtitle
-    color: '#000', // Black text color
-    marginTop: 5,
-    textAlign: 'left', // Left-aligned text
+  backButton: {
+    position: 'absolute', 
+    left: 10, 
   },
 });
 

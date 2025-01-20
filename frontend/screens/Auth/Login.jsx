@@ -47,6 +47,7 @@ const Login = ({ navigation }) => {
       Alert.alert("Error", error.message || "Something went wrong!");
     }
   };
+  
   return (
     <SafeAreaView style={styles.container}>
       <ImageBackground

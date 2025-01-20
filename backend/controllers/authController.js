@@ -15,18 +15,69 @@ const transporter = nodemailer.createTransport({
 
 // Email Template
 const getEmailTemplate = (appName, confirmationLink) => `
-  <div style="font-family: Arial, sans-serif; background-color: #1a1a1a; color: #ffffff; padding: 20px; text-align: center;">
-    <h2 style="color: #e6b800;">Please verify your email address for ${appName}</h2>
+  <style>
+    /* Default Light Theme */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #ffffff;
+      color: #000000;
+      padding: 20px;
+      text-align: center;
+    }
+    h2 {
+      color: #e6b800;
+      margin-bottom: 10px;
+    }
+    p {
+      color: #000000;
+    }
+    a {
+      display: inline-block;
+      margin: 20px auto;
+      padding: 10px 20px;
+      background-color: #d3d3d3;
+      color: #000000;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+    .footer {
+      color: #000000;
+    }
+    
+    /* Dark Theme */
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: #1a1a1a;
+        color: #ffffff;
+      }
+      h2, p {
+        color: #ffffff;
+      }
+      a {
+        background-color: #4a4a4a;
+        color: #ffffff;
+      }
+      .footer {
+        color: #ffffff;
+      }
+    }
+  </style>
+
+  <div>
+    <h2>Please verify your email address for ${appName}</h2>
     <p>Thanks for signing up for <strong>${appName}</strong>! To access your account, please confirm your email address.</p>
-    <p>After that, you can access our services.</p>
-    <a href="${confirmationLink}" 
-       style="display: inline-block; margin: 20px auto; padding: 10px 20px; background-color: #4caf50; color: #ffffff; text-decoration: none; border-radius: 5px;">
-       Go to email confirmation
-    </a>
-    <p>If you have any questions, don’t hesitate to reach out to us at <a href="mailto:${process.env.FEEDBACK_EMAIL}" style="color: #e6b800;">${process.env.FEEDBACK_EMAIL}</a></p>
-    <p>Thanks,<br>${appName}</p>
+    <a href="${confirmationLink}">Go to email confirmation</a>
+    <div style="margin: 30px 0; border-bottom: 1px solid #555;"></div>
+    <p>If you have any questions, don’t hesitate to reach out to us at 
+      <a href="mailto:${process.env.FEEDBACK_EMAIL}" style="color: #A87729; text-decoration: none;">
+        ${process.env.FEEDBACK_EMAIL}
+      </a>
+    </p>
+    <p class="footer">Thanks,<br />${appName}</p>
   </div>
 `;
+
 
 // Sign-Up Controller
 export const signUp = async (req, res) => {
