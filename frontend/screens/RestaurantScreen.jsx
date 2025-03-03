@@ -21,15 +21,15 @@ export default function RestaurantScreen({ route, navigation }) {
 
 
   const handleBackPress = () => {
-    navigation.goBack(); 
+    navigation.goBack();
   };
 
   useEffect(() => {
-    // Fetch restaurant details from the backend
     const fetchRestaurantDetails = async () => {
       try {
         const response = await axios.get(`${API_URL}/api/restaurants/${id}`);
-        setRestaurant(response.data); // Set restaurant details in state
+        console.log("Fetched Restaurant Data:", response.data); // Log the full response
+        setRestaurant(response.data);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching restaurant details:", error);
@@ -40,13 +40,15 @@ export default function RestaurantScreen({ route, navigation }) {
     fetchRestaurantDetails();
   }, [id]);
 
-  if (loading) {
+
+  if (loading || !restaurant) {
     return (
       <View style={styles.loaderContainer}>
         <ActivityIndicator size="large" color="#FFCC00" />
       </View>
     );
   }
+
 
   if (!restaurant) {
     return (
@@ -57,80 +59,90 @@ export default function RestaurantScreen({ route, navigation }) {
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
+      <ScrollView style={styles.container}>
         {/* Header Bar */}
         <View style={styles.headerContainer}>
-        <Header onBackPress={handleBackPress} />
-      </View>
-
-      {/* Image Section */}
-      <Image source={{ uri: restaurant.image }} style={styles.image} />
-
-      {/* Content Section */}
-      <View style={styles.contentContainer}>
-        {/* Header */}
-        <View style={styles.top}>
-          <Image source={{ uri: restaurant.logo }} style={styles.logo} />
-          <Text style={styles.rating}>
-            {restaurant.rating}/5 <Text style={styles.stars}>⭐⭐⭐⭐⭐</Text>
-          </Text>
+          <Header onBackPress={handleBackPress} />
         </View>
 
-        {/* Restaurant Name */}
-        <Text style={styles.title}>{restaurant.name}</Text>
+        {/* Image Section */}
+        <Image source={{ uri: restaurant.image }} style={styles.image} />
 
-        {/* Location and Call Section */}
-        <View style={styles.locationCallContainer}>
-          <View style={styles.locationCallItem}>
-            <FontAwesome name="map-marker" size={16} color="#A87729" />
-            <Text style={styles.address}>{restaurant.address}</Text>
+        {/* Content Section */}
+        <View style={styles.contentContainer}>
+          {/* Header */}
+          <View style={styles.top}>
+            <Image source={{ uri: restaurant.logo }} style={styles.logo} />
+            <Text style={styles.rating}>
+              {restaurant.rating}/5 <Text style={styles.stars}>⭐⭐⭐⭐⭐</Text>
+            </Text>
           </View>
 
-          <View style={styles.locationCallItem}>
-            <FontAwesome name="phone" size={16} color="#A87729" />
-            <TouchableOpacity>
-              <Text style={styles.callText}>Call Restaurant</Text>
-            </TouchableOpacity>
+          {/* Restaurant Name */}
+          <Text style={styles.title}>{restaurant.name}</Text>
+
+          {/* Location and Call Section */}
+          <View style={styles.locationCallContainer}>
+            <View style={styles.locationCallItem}>
+              <FontAwesome name="map-marker" size={16} color="#A87729" />
+              <Text style={styles.address}>{restaurant.address}</Text>
+            </View>
+
+            <View style={styles.locationCallItem}>
+              <FontAwesome name="phone" size={16} color="#A87729" />
+              <TouchableOpacity>
+                <Text style={styles.callText}>Call Restaurant</Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Divider Line */}
+            <View style={styles.divider} />
           </View>
 
-          {/* Divider Line */}
-          <View style={styles.divider} />
+          {/* Notes Section */}
+          <View style={styles.section}>
+            <View style={styles.sectionItem}>
+              <FontAwesome name="file-text" size={15} color="#A87729" />
+              <Text style={styles.sectionHeading}>NOTES FROM THE RESTAURANT</Text>
+            </View>
+            <Text style={styles.sectionText}>{restaurant.guidelines}</Text>
+            <View style={styles.divider} />
+          </View>
+
+          {/* Hours Section */}
+          <View style={styles.section}>
+            <View style={styles.sectionItem}>
+              <FontAwesome name="file-text" size={15} color="#A87729" />
+              <Text style={styles.sectionHeading}>HOURS OF OPERATION</Text>
+            </View>
+            {restaurant.hours &&
+              Object.entries(restaurant.hours).map(([day, hours]) => (
+                <View key={day} style={styles.hoursRow}>
+                  <Text style={styles.dayText}>{day}</Text>
+                  <Text style={styles.hoursText}>{hours}</Text>
+                </View>
+              ))}
+          </View>
+
+          {/* Add Menu Button */}
+          <TouchableOpacity
+            style={styles.addButton}
+            onPress={() => {
+
+              navigation.navigate('MenuScreen', { id: restaurant.id });
+              console.log('Navigating with Restaurant ID:', { id: restaurant.id });
+            }}
+          >
+            <Text style={styles.addButtonText}>Add Menu</Text>
+          </TouchableOpacity>
+
         </View>
-
-        {/* Notes Section */}
-        <View style={styles.section}>
-          <View style={styles.sectionItem}>
-            <FontAwesome name="file-text" size={15} color="#A87729" />
-            <Text style={styles.sectionHeading}>NOTES FROM THE RESTAURANT</Text>
-          </View>
-          <Text style={styles.sectionText}>{restaurant.guidelines}</Text>
-          <View style={styles.divider} />
-        </View>
-
-        {/* Hours Section */}
-        <View style={styles.section}>
-          <View style={styles.sectionItem}>
-            <FontAwesome name="file-text" size={15} color="#A87729" />
-            <Text style={styles.sectionHeading}>HOURS OF OPERATION</Text>
-          </View>
-          {restaurant.hours &&
-            Object.entries(restaurant.hours).map(([day, hours]) => (
-              <View key={day} style={styles.hoursRow}>
-                <Text style={styles.dayText}>{day}</Text>
-                <Text style={styles.hoursText}>{hours}</Text>
-              </View>
-            ))}
-        </View>
-
-        {/* Add Menu Button */}
-        <TouchableOpacity style={styles.addButton}>
-          <Text style={styles.addButtonText}>RESERVE A DINNING</Text>
-        </TouchableOpacity>
-      </View>
+      </ScrollView>
 
       {/* Navigation Bar */}
       <Navbar navigation={navigation} />
-    </ScrollView>
+    </View>
   );
 }
 
@@ -144,7 +156,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    zIndex: 1, 
+    zIndex: 1,
   },
   image: {
     width: "100%",
@@ -174,8 +186,8 @@ const styles = StyleSheet.create({
     fontSize: 34,
     fontWeight: "bold",
     color: "#fff",
-    marginTop: -13, 
-    marginVertical: 15, 
+    marginTop: -13,
+    marginVertical: 15,
   },
   locationCallContainer: {
     marginTop: 8,
@@ -205,7 +217,7 @@ const styles = StyleSheet.create({
   sectionItem: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 4, 
+    marginBottom: 4,
   },
   sectionHeading: {
     color: "#fff",
@@ -225,12 +237,13 @@ const styles = StyleSheet.create({
     marginVertical: 8,
   },
   addButton: {
-    backgroundColor: "#FF0000",
+    backgroundColor: "#DD1717",
     borderRadius: 5,
     paddingVertical: 12,
     paddingHorizontal: 100,
     alignItems: "center",
-    alignSelf: "center", 
+    alignSelf: "center",
+
   },
   addButtonText: {
     color: "#fff",

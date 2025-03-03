@@ -15,6 +15,7 @@ app.use(
     origin: [
       "http://localhost:8081", // Browser frontend
       "http://192.168.0.117:8081", // Expo app frontend
+      "http://192.168.100.13:8081"
     ],
     credentials: true,
   })

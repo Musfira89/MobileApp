@@ -69,7 +69,9 @@ const HomeScreen = ({ navigation }) => {
               key={restaurant.id}
               restaurant={restaurant}
               onPress={() =>
+                
                 navigation.navigate("RestaurantScreen", { id: restaurant.id })
+                
               }
             />
           ))

@@ -14,8 +14,8 @@ const Header = ({ onBackPress }) => {
 
 const styles = StyleSheet.create({
   header: {
-    backgroundColor: '#000', 
-    height: 70, 
+    backgroundColor: '#1D1D1D', 
+    height: 60, 
     justifyContent: 'center', 
     paddingHorizontal: 10, 
   },

@@ -14,12 +14,16 @@ const RestaurantCard = ({ restaurant }) => {
   console.log(restaurant);
   console.log(restaurant.image);
   // Function to navigate to the RestaurantScreen
-  const navigateToRestaurantScreen = () => {
+  const navigateToBookingScreen = () => {
+    navigation.navigate("BookingScreen", { id: restaurant.id }); // Pass 'id' to match the parameter in RestaurantScreen
+  };
+  const navigateToResturantScreen = () => {
     navigation.navigate("RestaurantScreen", { id: restaurant.id }); // Pass 'id' to match the parameter in RestaurantScreen
   };
 
+
   return (
-    <TouchableOpacity onPress={navigateToRestaurantScreen} style={styles.card}>
+    <TouchableOpacity onPress={navigateToResturantScreen} style={styles.card}>
       {/* Background Image */}
       <ImageBackground
         source={{ uri: restaurant.image }} // Dynamically pass image source from RestImg.js
@@ -51,7 +55,7 @@ const RestaurantCard = ({ restaurant }) => {
             <Text style={styles.locationBox}>{restaurant.city}</Text>
             <TouchableOpacity
               style={styles.reserveButton}
-              onPress={navigateToRestaurantScreen} // Navigate on Reserve button click
+              onPress={navigateToBookingScreen} // Navigate on Reserve button click
             >
               <Text style={styles.reserveButtonText}>Reserve</Text>
             </TouchableOpacity>
@@ -130,7 +134,7 @@ const styles = StyleSheet.create({
   },
 
   reserveButton: {
-    backgroundColor: "#FF0000",
+    backgroundColor: "#DD1717",
     paddingVertical: 7,
     paddingHorizontal: 20,
     borderRadius: 3,

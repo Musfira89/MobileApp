@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons'; // Ensure you install `expo-vecto
 const Navbar = ({ navigation }) => {
   return (
     <View style={styles.navbar}>
-      <TouchableOpacity onPress={() => navigation.navigate('Explore')} style={styles.navItem}>
+      <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')} style={styles.navItem}>
         <Ionicons name="restaurant" size={24} color="#fff" />
         <Text style={styles.navText}>Explore</Text>
       </TouchableOpacity>
@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
   navbar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    backgroundColor: '#000', // Changed to black
+    backgroundColor: '#1D1D1D', // Changed to black
     paddingVertical: 3,
     paddingHorizontal: 8,
     borderTopLeftRadius: 1,
@@ -39,6 +39,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: -2 },
     shadowOpacity: 0.1,
     shadowRadius: 3,
+
   },
   navItem: {
     alignItems: 'center',
