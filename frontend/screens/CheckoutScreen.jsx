@@ -64,7 +64,10 @@ const CheckoutScreen = ({ navigation }) => {
                     </View>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.addPaymentButton}>
+                <TouchableOpacity 
+                    style={styles.addPaymentButton} 
+                    onPress={() => navigation.navigate('BookingScreen')} // Navigating to Booking Screen
+                >
                     <Text style={styles.addPaymentButtonText}>ADD PAYMENT METHOD</Text>
                     <Ionicons name="arrow-forward" size={24} color="white" style={styles.addPaymentButtonIcon} />
                 </TouchableOpacity>

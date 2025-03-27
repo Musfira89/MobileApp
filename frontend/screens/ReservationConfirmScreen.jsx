@@ -1,11 +1,15 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import Navbar from "../components/Common/Navbar";
 
 const ConfirmScreen = () => {
   const navigation = useNavigation();
+
+  const handleChooseFood = () => {
+    navigation.navigate("MenuScreen"); // Navigate to the Restaurant screen
+  };
 
   return (
     <View style={styles.container}>
@@ -14,11 +18,13 @@ const ConfirmScreen = () => {
       </View>
       <Text style={styles.title}>Reservation Successfully</Text>
       <Text style={styles.message}>
-        Thank you for your reservation. Please wait for the confirmation email or SMS
+        Thank you for your reservation. Please wait for the confirmation email or SMS.
       </Text>
       <Text style={styles.note}>
-        We can provide you a reservation ID after email confirmation
+        We can provide you a reservation ID after email confirmation.
       </Text>
+
+     
 
       {/* Bottom Navigation */}
       <View style={styles.navbarContainer}>
@@ -34,7 +40,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingBottom: 80, // Add padding to avoid overlap with navbar
+    paddingBottom: 80,
   },
   iconContainer: {
     width: 96,
@@ -62,7 +68,10 @@ const styles = StyleSheet.create({
     color: '#A87729',
     textAlign: 'center',
     paddingHorizontal: 32,
+    marginBottom: 20,
   },
+  
+ 
   navbarContainer: {
     position: 'absolute',
     bottom: 0,

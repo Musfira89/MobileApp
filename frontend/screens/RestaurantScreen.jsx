@@ -130,11 +130,11 @@ export default function RestaurantScreen({ route, navigation }) {
             style={styles.addButton}
             onPress={() => {
 
-              navigation.navigate('MenuScreen', { id: restaurant.id });
+              navigation.navigate('ReservationScreen', { id: restaurant.id });
               console.log('Navigating with Restaurant ID:', { id: restaurant.id });
             }}
           >
-            <Text style={styles.addButtonText}>Add Menu</Text>
+            <Text style={styles.addButtonText}>RESERVE A DINNING</Text>
           </TouchableOpacity>
 
         </View>
@@ -247,7 +247,7 @@ const styles = StyleSheet.create({
   },
   addButtonText: {
     color: "#fff",
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: "bold",
   },
   hoursRow: {

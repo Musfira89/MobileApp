@@ -1,57 +1,41 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, Image, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import React, { useState } from "react";
+import {
+    View, Text, TextInput, Image, TouchableOpacity,
+    ScrollView, StyleSheet, Modal
+} from 'react-native';
 import { FontAwesome } from "@expo/vector-icons";
 import Navbar from "../components/Common/Navbar";
 import Header from "../components/Common/Header";
 
-
-const MenuScreen = ({ navigation, route }) => {
+const MenuScreen = ({ navigation }) => {
     const [favorites, setFavorites] = useState([]);
+    const [selectedItem, setSelectedItem] = useState(null);
+    const [quantity, setQuantity] = useState(1);
+
     const toggleFavorite = (id) => {
-        if (favorites.includes(id)) {
-            setFavorites(favorites.filter((fav) => fav !== id));
-        } else {
-            setFavorites([...favorites, id]);
-        }
+        setFavorites(favorites.includes(id)
+            ? favorites.filter(fav => fav !== id)
+            : [...favorites, id]
+        );
     };
 
     const handleBackPress = () => {
         navigation.goBack();
     };
 
+    const openPopup = (item) => {
+        setSelectedItem(item);
+        setQuantity(1);
+    };
+
+    const closePopup = () => {
+        setSelectedItem(null);
+    };
+
     const menuItems = [
-        {
-            id: 1,
-            name: 'Spicy Mexican Wings',
-            description: 'Mouth-watering fried wings tossed in...',
-            serves: 'Serves 2 people',
-            price: 'Rs. 999',
-            image: require('../assets/images/wings.png'),
-        },
-        {
-            id: 2,
-            name: 'Supreme Nachos',
-            description: 'Delightful Mexican starter with imp...',
-            serves: 'Serves 3 people',
-            price: 'Rs. 1895',
-            image: require('../assets/images/nachos.png'),
-        },
-        {
-            id: 3,
-            name: 'Cheesy Fries',
-            description: 'Crispy fries drizzled with cheese and...',
-            serves: 'Serves 2 people',
-            price: 'Rs. 850',
-            image: require('../assets/images/fries.png'),
-        },
-        {
-            id: 4,
-            name: 'Cheesy Fries',
-            description: 'Crispy fries drizzled with cheese and...',
-            serves: 'Serves 2 people',
-            price: 'Rs. 850',
-            image: require('../assets/images/fries.png'),
-        },
+        { id: 1, name: 'Spicy Mexican Wings', description: 'Mouth-watering fried wings tossed in...', serves: 'Serves 2 people', price: 'Rs. 999', image: require('../assets/images/wings.png') },
+        { id: 2, name: 'Supreme Nachos', description: 'Delightful Mexican starter with imp...', serves: 'Serves 3 people', price: 'Rs. 1895', image: require('../assets/images/nachos.png') },
+        { id: 3, name: 'Cheesy Fries', description: 'Crispy fries drizzled with cheese and...', serves: 'Serves 2 people', price: 'Rs. 850', image: require('../assets/images/fries.png') }
     ];
 
     return (
@@ -61,10 +45,7 @@ const MenuScreen = ({ navigation, route }) => {
             </View>
 
             <View style={styles.top}>
-                <Image
-                    source={require('../assets/images/kababjeeslogo.jpg')} // Update the path to your logo image
-                    style={styles.logo}
-                />
+                <Image source={require('../assets/images/kababjeeslogo.jpg')} style={styles.logo} />
             </View>
 
             <View style={styles.searchBarContainer}>
@@ -73,7 +54,6 @@ const MenuScreen = ({ navigation, route }) => {
             </View>
 
             <Text style={styles.sectionTitle}>CATEGORIES</Text>
-
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categories}>
                 {['Starters', 'Burgers', 'Sandwiches', 'Steaks', 'Chinese'].map((item, index) => (
                     <TouchableOpacity key={index} style={[styles.category, index === 0 && styles.activeCategory]}>
@@ -92,12 +72,7 @@ const MenuScreen = ({ navigation, route }) => {
                             <Text style={styles.menuServes}>{item.serves}</Text>
                             <View style={styles.menuFooter}>
                                 <Text style={styles.menuPrice}>⚡ {item.price}</Text>
-                                <TouchableOpacity style={styles.addButton}
-                                    onPress={() => {
-                                        navigation.navigate('MenuDetailScreen', { item });
-
-                                    }}>
-
+                                <TouchableOpacity style={styles.addButton} onPress={() => openPopup(item)}>
                                     <Text style={styles.addText}>ADD</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity onPress={() => toggleFavorite(item.id)}>
@@ -110,72 +85,147 @@ const MenuScreen = ({ navigation, route }) => {
             </ScrollView>
 
             <Navbar navigation={navigation} />
+
+            {/* POPUP CARD */}
+            {selectedItem && (
+                <Modal transparent animationType="fade">
+                    <View style={styles.popupOverlay}>
+                        <View style={styles.popupCard}>
+                            <TouchableOpacity onPress={closePopup} style={styles.closeButton}>
+                                <Text style={styles.closeText}>❌</Text>
+                            </TouchableOpacity>
+
+                            <Image source={selectedItem.image} style={styles.popupImage} />
+                            <Text style={styles.popupTitle}>{selectedItem.name}</Text>
+                            <Text style={styles.popupDescription}>{selectedItem.description}</Text>
+
+                            <View style={styles.quantityContainer}>
+                                <TouchableOpacity onPress={() => setQuantity(quantity > 1 ? quantity - 1 : 1)} style={styles.quantityButton}>
+                                    <Text style={styles.quantityText}>-</Text>
+                                </TouchableOpacity>
+                                <Text style={styles.quantityText}>{quantity}</Text>
+                                <TouchableOpacity onPress={() => setQuantity(quantity + 1)} style={styles.quantityButton}>
+                                    <Text style={styles.quantityText}>+</Text>
+                                </TouchableOpacity>
+                            </View>
+
+                            <TouchableOpacity style={styles.addToCartButton}
+                                onPress={() => {
+                                    closePopup();
+                                    navigation.navigate('MenuDetailScreen', { item: selectedItem, quantity });
+                                }}>
+                                <Text style={styles.addToCartText}>ADD Rs {selectedItem.price}</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </Modal>
+            )}
         </View>
     );
 };
 
-const styles = StyleSheet.create({
-    headerContainer: {
-        position: "absolute",
-        top: 0,
-        left: 0,
-        right: 0,
-        zIndex: 1,
-    },
-    top: {
-        flexDirection: "row",
-        alignItems: "center",
-        marginTop: 45, // Reduced space above the logo
-    },
-    logo: {
-        width: 140,
-        height: 100,
-        marginRight: "auto",
-        resizeMode: "contain",
-        marginLeft: 100,
-        justifyContent: "center",
-    },
-    container: { flex: 1, backgroundColor: '#000' },
-    searchBarContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: 'white',
-        borderRadius: 10,
-        marginHorizontal: 20,
-        marginBottom: 0,
-        paddingHorizontal: 0,
-    },
-    searchIcon: {
-        marginRight: 10,
-        backgroundColor: '#D9A850',
-        padding: 10,
-        borderTopLeftRadius: 10,
-        borderBottomLeftRadius: 10,
-        color: '#fff',
 
-    },
-    searchBar: {
-        flex: 1,
-        paddingVertical: 10,
-    },
+const styles = StyleSheet.create({
+    container: { flex: 1, backgroundColor: '#000' },
+    headerContainer: { position: "absolute", top: 0, left: 0, right: 0, zIndex: 1 },
+    top: { flexDirection: "row", alignItems: "center", marginTop: 45 },
+    logo: { width: 140, height: 100, marginLeft: 100, resizeMode: "contain" },
+    searchBarContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'white', borderRadius: 10, marginHorizontal: 20 },
+    searchIcon: { marginRight: 10, backgroundColor: '#D9A850', padding: 10, borderRadius: 10, color: '#fff' },
+    searchBar: { flex: 1, paddingVertical: 10 },
     sectionTitle: { color: '#fff', margin: 20, fontSize: 18, fontWeight: 'bold' },
-    categories: { flexDirection: 'row', marginLeft: 20, marginBottom: 40, marginTop: 10, height: 60 },
-    category: { paddingVertical: 8, paddingHorizontal: 15, marginRight: 10, borderRadius: 20, backgroundColor: '#444', marginBottom: 1 },
-    activeCategory: { backgroundColor: '#DD1717' },
-    categoryText: { color: '#fff' },
-    menuCard: { flexDirection: 'row', backgroundColor: '#fff', borderRadius: 20, marginHorizontal: 20, marginBottom: 10 },
-    menuImage: { width: 100, height: 140, borderTopLeftRadius: 20, borderBottomLeftRadius: 20 },
+    categories: { paddingLeft: 20, marginBottom: 30, flexDirection: 'row' },
+    category: {  backgroundColor: '#444', 
+        paddingVertical: 12,  // Slightly increased padding for better spacing
+        paddingHorizontal: 20,  
+        borderRadius: 25,  
+        marginRight: 12, 
+        alignItems: 'center', 
+        justifyContent: 'center', // Ensures text is centered
+        minWidth: 110},
+    activeCategory: { backgroundColor: '#D9A850' },
+    categoryText: { 
+        color: '#fff', 
+        fontWeight: 'bold', 
+        fontSize: 15,  // Slightly increased font size for readability
+        textAlign: 'center',  
+        flexWrap: 'wrap', // Ensures text does not overflow
+        maxWidth: 50,  // Prevents text from expanding too much
+    },
+    menuCard: { 
+        flexDirection: 'row', 
+        backgroundColor: '#fff', 
+        borderRadius: 20, 
+        marginHorizontal: 20, 
+        marginBottom: 10, 
+        padding: 10 
+    },
+    
+    menuImage: { 
+        width: 100, 
+        height: 140, 
+        borderTopLeftRadius: 20, 
+        borderBottomLeftRadius: 20 
+    },
+
     menuDetails: { flex: 1, padding: 10 },
+
     menuTitle: { fontSize: 16, fontWeight: 'bold' },
+
     menuDescription: { color: '#666' },
-    menuServes: { marginVertical: 5, color: '#666' },
-    menuFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-    menuPrice: { fontWeight: 'bold', color: '#000' },
-    addButton: { backgroundColor: '#DD1717', paddingHorizontal: 15, paddingVertical: 5, borderRadius: 10 },
+
+    menuServes: { 
+        marginVertical: 5, 
+        color: 'red',  
+        fontWeight: 'bold' 
+    },
+
+    menuFooter: { 
+        flexDirection: 'row', 
+        justifyContent: 'space-between', 
+        alignItems: 'center' 
+    },
+
+    menuPrice: { 
+        fontWeight: 'bold', 
+        color: '#000', 
+        marginLeft: 'auto',// Pushes price to the right
+        marginRight: 10 
+    },
+
+    addButton: { 
+        backgroundColor: '#DD1717', 
+        paddingHorizontal: 15,  
+        paddingVertical: 6, 
+        borderRadius: 10, 
+        minWidth: 60,  
+        alignItems: 'center',
+        justifyContent: 'center', 
+        alignSelf: 'center'  // Centers button inside card
+    },
+
     addText: { color: '#fff', fontWeight: 'bold' },
+
     bottomNav: { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 15, backgroundColor: '#111' },
+
     navText: { color: '#fff' },
-    heartIcon: { fontSize: 22, marginLeft: 10 },
+
+    heartIcon: { fontSize: 22, marginLeft: 8 },
+
+
+
+    // Popup Styles
+    popupOverlay: { flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "rgba(0,0,0,0.7)" },
+    popupCard: { width: 300, backgroundColor: "#fff", padding: 20, borderRadius: 20, alignItems: "center" },
+    closeButton: { position: "absolute", top: 10, right: 10 },
+    closeText: { fontSize: 22 },
+    popupImage: { width: 200, height: 120, marginBottom: 10 },
+    popupTitle: { fontSize: 18, fontWeight: "bold" },
+    quantityContainer: { flexDirection: "row", marginTop: 10, alignItems: "center" },
+    quantityButton: { padding: 10, backgroundColor: "#ddd", borderRadius: 5, marginHorizontal: 5 },
+    quantityText: { fontSize: 18 },
+    addToCartButton: { backgroundColor: "#DD1717", padding: 10, borderRadius: 10, marginTop: 10 },
+    addToCartText: { color: "#fff", fontWeight: "bold" },
 });
 
 export default MenuScreen;

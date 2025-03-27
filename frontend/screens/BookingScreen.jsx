@@ -16,7 +16,7 @@ const BookingScreen = ({ navigation }) => {
     const times = ['4:00 PM', '5:00 PM', '6:00 PM', '7:00 PM'];
 
     const handleReservation = () => {
-        navigation.navigate("ConfirmScreen");
+        navigation.navigate("ReservationConfirmScreen");
         console.log({ selectedDate, guestCount, selectedTime, phoneNumber, email, specialRequest });
     };
     const handleBackPress = () => {
@@ -107,7 +107,7 @@ const BookingScreen = ({ navigation }) => {
                 <TextInput
                     value={specialRequest}
                     onChangeText={setSpecialRequest}
-                    placeholder="T"
+                    placeholder="Type"
                     placeholderTextColor="#666"
                     style={{ backgroundColor: '#222', color: 'white', padding: 10, borderRadius: 8, marginBottom: 20 }}
                 />

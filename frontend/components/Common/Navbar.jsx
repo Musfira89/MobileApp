@@ -13,7 +13,7 @@ const Navbar = ({ navigation }) => {
         <Ionicons name="book" size={24} color="#fff" />
         <Text style={styles.navText}>Reservations</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate('Transportation')} style={styles.navItem}>
+      <TouchableOpacity onPress={() => navigation.navigate('TransportScreen')} style={styles.navItem}>
         <Ionicons name="car" size={24} color="#fff" />
         <Text style={styles.navText}>Transport</Text>
       </TouchableOpacity>

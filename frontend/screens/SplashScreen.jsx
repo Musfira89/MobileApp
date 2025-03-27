@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -8,9 +8,21 @@ import {
   StyleSheet,
   StatusBar,
   SafeAreaView,
+  Animated,
 } from 'react-native';
 
 const SplashScreen = ({ navigation }) => {
+  const scaleAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.spring(scaleAnim, {
+      toValue: 1,
+      friction: 5,
+      tension: 40,
+      useNativeDriver: true,
+    }).start();
+  }, []);
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" />
@@ -23,11 +35,16 @@ const SplashScreen = ({ navigation }) => {
           <View style={styles.overlay} />
 
           <View style={styles.contentContainer}>
-            <Image
-              source={require('../assets/images/logo.png')}
-              style={styles.logo}
-              resizeMode="contain"
-            />
+            <Animated.View style={[styles.circleContainer, { transform: [{ scale: scaleAnim }] }]}>
+              <View style={styles.circle}>
+                <Image
+                  source={require('../assets/images/logo1.png')}
+                  style={styles.logo}
+                  resizeMode="contain"
+                />
+                <Text style={styles.brandText}>MakeMy <Text style={styles.highlightText}>Day</Text></Text>
+              </View>
+            </Animated.View>
             <Text style={styles.title}>
               Best Way To Surprise Your Loved Ones
             </Text>
@@ -77,14 +94,36 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     zIndex: 2,
   },
+  circleContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+  },
+  circle: {
+    width: 220,
+    height: 220,
+    borderRadius: 110,
+    borderWidth: 4,
+    borderColor: '#A87729',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+  },
   logo: {
-    width: 290,
-    height: 290,
-    marginBottom: 30,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
+    width: 150,
+    height: 150,
+    marginBottom: 10,
+  },
+  brandText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#FFF',
+    position: 'absolute',
+    bottom: 22,
+    textAlign: 'center',
+  },
+  highlightText: {
+    color: '#A87729',
   },
   title: {
     fontSize: 38,

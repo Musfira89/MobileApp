@@ -7,55 +7,49 @@ import {
   TouchableOpacity,
   Image,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native"; // Import useNavigation
+import { useNavigation } from "@react-navigation/native";
 
 const RestaurantCard = ({ restaurant }) => {
-  const navigation = useNavigation(); // Hook for navigation
-  console.log(restaurant);
-  console.log(restaurant.image);
-  // Function to navigate to the RestaurantScreen
-  const navigateToBookingScreen = () => {
-    navigation.navigate("BookingScreen", { id: restaurant.id }); // Pass 'id' to match the parameter in RestaurantScreen
-  };
-  const navigateToResturantScreen = () => {
-    navigation.navigate("RestaurantScreen", { id: restaurant.id }); // Pass 'id' to match the parameter in RestaurantScreen
-  };
+  const navigation = useNavigation();
 
+  // Navigate to RestaurantScreen when clicked
+  const navigateToRestaurantScreen = () => {
+    navigation.navigate("RestaurantScreen", { id: restaurant.id });
+  };
 
   return (
-    <TouchableOpacity onPress={navigateToResturantScreen} style={styles.card}>
-      {/* Background Image */}
+    <TouchableOpacity onPress={navigateToRestaurantScreen} style={styles.card}>
       <ImageBackground
-        source={{ uri: restaurant.image }} // Dynamically pass image source from RestImg.js
+        source={{ uri: restaurant.image }}
         style={styles.imageBackground}
         imageStyle={{ borderRadius: 15 }}
       >
-        {/* Centered Black Box */}
+        {/* Dark Overlay */}
         <View style={styles.overlay}>
-          {/* Logo */}
+          {/* Restaurant Logo */}
           <Image source={{ uri: restaurant.logo }} style={styles.logo} />
 
           {/* Restaurant Details */}
           <View style={styles.detailsContainer}>
             <Text style={styles.name}>{restaurant.name}</Text>
             <Text style={styles.cuisine}>
-  {Array.isArray(restaurant.cuisines) ? restaurant.cuisines.join(' | ') : restaurant.cuisines}
-</Text>
-          </View>
-
-          {/* Rating */}
-          <View style={styles.ratingContainer}>
-            <Text style={styles.rating}>
-              {restaurant.rating}/5 <Text style={styles.stars}>⭐⭐⭐⭐⭐</Text>
+              {Array.isArray(restaurant.cuisines)
+                ? restaurant.cuisines.join(" | ")
+                : restaurant.cuisines}
             </Text>
           </View>
 
-          {/* Location and Reserve Button Row */}
+          {/* Rating */}
+          <Text style={styles.rating}>
+            {restaurant.rating}/5 ⭐⭐⭐⭐⭐
+          </Text>
+
+          {/* Location & Reserve Button */}
           <View style={styles.infoRow}>
-            <Text style={styles.locationBox}>{restaurant.city}</Text>
+            <Text style={styles.location}>{restaurant.city}</Text>
             <TouchableOpacity
               style={styles.reserveButton}
-              onPress={navigateToBookingScreen} // Navigate on Reserve button click
+              onPress={navigateToRestaurantScreen}
             >
               <Text style={styles.reserveButtonText}>Reserve</Text>
             </TouchableOpacity>
@@ -69,79 +63,66 @@ const RestaurantCard = ({ restaurant }) => {
 const styles = StyleSheet.create({
   card: {
     marginBottom: 20,
-    borderRadius: 10,
+    borderRadius: 15,
     overflow: "hidden",
   },
   imageBackground: {
     width: "100%",
     height: 240,
-    justifyContent: "center", // Center content vertically
+    justifyContent: "flex-end",
   },
   overlay: {
-    backgroundColor: "rgba(0, 0, 0, 0.8)", // Semi-transparent black background
-    padding: 19,
-    width: "95%",
-    borderRadius: 10,
-    alignSelf: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    padding: 18,
+    borderRadius: 15,
   },
   logo: {
-    width: 85, // Smaller width
-    height: 40, // Smaller height
-    alignSelf: "flex-start", // Align logo to the left
-    resizeMode: "contain", // Ensures the entire logo is visible
+    width: 90,
+    height: 40,
+    resizeMode: "contain",
+    alignSelf: "flex-start",
+    marginBottom: 8,
   },
   detailsContainer: {
-    alignSelf: "flex-start", // Align details to the left
-    marginBottom: 10,
+    marginBottom: 8,
   },
   name: {
-    fontSize: 25,
+    fontSize: 22,
     fontWeight: "bold",
     color: "#fff",
-    textAlign: "left", // Align text to the left
   },
   cuisine: {
-    marginTop: 4,
-    fontSize: 13,
+    fontSize: 14,
     color: "#ccc",
-    textAlign: "left", // Align text to the left
-  },
-  ratingContainer: {
-    alignSelf: "flex-start", // Align rating to the left
-    marginBottom: 10,
   },
   rating: {
     color: "#fff",
     fontSize: 14,
-    marginBottom: 12,
+    marginBottom: 10,
   },
-
   infoRow: {
     flexDirection: "row",
-    justifyContent: "space-between", // Space out location and button
-    width: "100%",
+    justifyContent: "space-between",
     alignItems: "center",
   },
-  locationBox: {
+  location: {
     fontSize: 12,
-    color: "#fff", // Updated font color to white
-    backgroundColor: "transparent", // Removed background color
-    borderWidth: 1, // Added border
-    borderColor: "#fff", // Set border color to white
+    color: "#fff",
+    borderWidth: 1,
+    borderColor: "#fff",
     paddingVertical: 5,
-    paddingHorizontal: 20,
-    borderRadius: 2,
+    paddingHorizontal: 15,
+    borderRadius: 5,
   },
-
   reserveButton: {
     backgroundColor: "#DD1717",
-    paddingVertical: 7,
+    paddingVertical: 8,
     paddingHorizontal: 20,
-    borderRadius: 3,
+    borderRadius: 5,
   },
   reserveButtonText: {
     color: "#fff",
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: "bold",
   },
 });
