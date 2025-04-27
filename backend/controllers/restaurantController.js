@@ -36,3 +36,80 @@ export const getRestaurantDetails = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch restaurant details." });
   }
 };
+
+export const checkReservationAvailability = async (req, res) => {
+  const { id } = req.params;
+  const { date, time } = req.body;
+
+  try {
+    const db = getFirestore();
+    const timeUpper = time.toUpperCase();
+    const docId = `${date}_${timeUpper}`;
+
+    const docRef = db
+      .collection("restaurants")
+      .doc(id)
+      .collection("reservations")
+      .doc(docId);
+
+    const docSnap = await docRef.get();
+
+    if (!docSnap.exists) {
+      const db = getFirestore();
+      const reservationsRef = db
+        .collection("restaurants")
+        .doc(id)
+        .collection("reservations");
+    
+      const dateSnapshot = await reservationsRef
+        .where("date", "==", date)
+        .limit(1)
+        .get();
+    
+      if (dateSnapshot.empty) {
+        // ❌ No documents found for the date
+        return res.json({ available: false, earliestTime: null, noData: true });
+      }
+    
+      // ✅ Document doesn't exist but date has other slots → considered available
+      return res.json({ available: true, earliestTime: null });
+    }
+    
+    const data = docSnap.data();
+
+    if (data.available === false) {
+      const earliestTime = await getEarliestAvailableTime(id, date);
+      return res.json({ available: false, earliestTime });
+    }
+
+    res.json({ available: true, earliestTime: null });
+  } catch (error) {
+    console.error("Error checking reservation:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+async function getEarliestAvailableTime(restaurantId, date) {
+  const db = getFirestore();
+  const reservationsRef = db
+    .collection("restaurants")
+    .doc(restaurantId)
+    .collection("reservations");
+
+  const querySnapshot = await reservationsRef
+    .where("date", "==", date)
+    .orderBy("time")
+    .get();
+
+  for (const doc of querySnapshot.docs) {
+    const data = doc.data();
+    if (data.available === true) {
+      return data.time;
+    }
+  }
+
+  return null;
+}
+
+
+

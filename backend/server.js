@@ -12,16 +12,10 @@ app.use(bodyParser.json());
 app.use(express.json());
 app.use(
   cors({
-    origin: [
-      "http://localhost:8081", // Browser frontend
-      "http://192.168.0.117:8081", // Expo app frontend
-      "http://192.168.100.13:8081"
-    ],
+    origin: "*", // Allow all origins (for testing only)
     credentials: true,
   })
 );
-
-
 
 // Routes
 app.use("/api/auth", authRoutes);

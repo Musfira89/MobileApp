@@ -19,7 +19,6 @@ export default function RestaurantScreen({ route, navigation }) {
   const [restaurant, setRestaurant] = useState(null);
   const [loading, setLoading] = useState(true);
 
-
   const handleBackPress = () => {
     navigation.goBack();
   };
@@ -40,7 +39,6 @@ export default function RestaurantScreen({ route, navigation }) {
     fetchRestaurantDetails();
   }, [id]);
 
-
   if (loading || !restaurant) {
     return (
       <View style={styles.loaderContainer}>
@@ -48,7 +46,6 @@ export default function RestaurantScreen({ route, navigation }) {
       </View>
     );
   }
-
 
   if (!restaurant) {
     return (
@@ -104,7 +101,9 @@ export default function RestaurantScreen({ route, navigation }) {
           <View style={styles.section}>
             <View style={styles.sectionItem}>
               <FontAwesome name="file-text" size={15} color="#A87729" />
-              <Text style={styles.sectionHeading}>NOTES FROM THE RESTAURANT</Text>
+              <Text style={styles.sectionHeading}>
+                NOTES FROM THE RESTAURANT
+              </Text>
             </View>
             <Text style={styles.sectionText}>{restaurant.guidelines}</Text>
             <View style={styles.divider} />
@@ -125,18 +124,15 @@ export default function RestaurantScreen({ route, navigation }) {
               ))}
           </View>
 
-          {/* Add Menu Button */}
           <TouchableOpacity
             style={styles.addButton}
             onPress={() => {
-
-              navigation.navigate('ReservationScreen', { id: restaurant.id });
-              console.log('Navigating with Restaurant ID:', { id: restaurant.id });
+              navigation.navigate("ReservationScreen", { id }); // use route param directly
+              console.log("Navigating with Restaurant ID:", id);
             }}
           >
             <Text style={styles.addButtonText}>RESERVE A DINNING</Text>
           </TouchableOpacity>
-
         </View>
       </ScrollView>
 
@@ -243,7 +239,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 100,
     alignItems: "center",
     alignSelf: "center",
-
   },
   addButtonText: {
     color: "#fff",
@@ -267,4 +262,3 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
-

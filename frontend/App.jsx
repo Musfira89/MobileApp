@@ -1,14 +1,16 @@
 // App.jsx
-import React from 'react';
-import { SafeAreaView, StyleSheet } from 'react-native';
-import AppNavigator from './AppNavigator';
+import React from "react";
+import { SafeAreaView, StyleSheet } from "react-native";
+import AppNavigator from "./AppNavigator";
+import { CartProvider } from "./context/CartContext";
 
 const App = () => {
-
   return (
-    <SafeAreaView style={styles.container}>
-      <AppNavigator />
-    </SafeAreaView>
+    <CartProvider>
+      <SafeAreaView style={styles.container}>
+        <AppNavigator />
+      </SafeAreaView>
+    </CartProvider>
   );
 };
 

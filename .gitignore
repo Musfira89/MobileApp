@@ -12,3 +12,6 @@ dist/
 # IDE files
 .vscode/
 .idea/
+
+# Firebase admin private key
+backend/firebase-admin-key.json
