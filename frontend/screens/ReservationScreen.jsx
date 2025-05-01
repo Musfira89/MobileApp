@@ -113,6 +113,26 @@ export default function ReservationScreen({ route, navigation }) {
   };
 
   const handleBackPress = () => navigation.goBack();
+  // Save the reservation data to Firestore
+  const saveReservationData = async () => {
+    const reservationData = {
+      date: dateOptions[selectedDateIndex].dateObj.toISOString().split("T")[0],
+      time: selectedTime,
+      guests: selectedGuests,
+      restaurantId: id,
+    };
+
+    try {
+      const response = await axios.post(
+        `${API_URL}/api/reservations/${id}/save-reservation`,
+        reservationData
+      );
+      console.log("Reservation saved:", response.data);
+      navigation.navigate("MenuScreen", { id }); // Navigate to the Menu screen
+    } catch (err) {
+      console.error("Error saving reservation:", err);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -218,6 +238,7 @@ export default function ReservationScreen({ route, navigation }) {
                 <TouchableOpacity
                   style={styles.addMenuButton}
                   onPress={() => {
+                    saveReservationData();
                     navigation.navigate("MenuScreen", { id });
                     console.log(
                       "Navigating to MenuScreen with Restaurant ID:",

@@ -89,27 +89,4 @@ export const checkReservationAvailability = async (req, res) => {
   }
 };
 
-async function getEarliestAvailableTime(restaurantId, date) {
-  const db = getFirestore();
-  const reservationsRef = db
-    .collection("restaurants")
-    .doc(restaurantId)
-    .collection("reservations");
-
-  const querySnapshot = await reservationsRef
-    .where("date", "==", date)
-    .orderBy("time")
-    .get();
-
-  for (const doc of querySnapshot.docs) {
-    const data = doc.data();
-    if (data.available === true) {
-      return data.time;
-    }
-  }
-
-  return null;
-}
-
-
 

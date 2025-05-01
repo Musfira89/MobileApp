@@ -7,20 +7,35 @@ import {
   ScrollView,
   StyleSheet,
 } from "react-native";
-import { useNavigation, useRoute } from "@react-navigation/native";
 import Navbar from "../components/Common/Navbar";
 import Header from "../components/Common/Header";
 import { useCart } from "../context/CartContext";
+import axios from "axios";
+import API_URL from "../config";
+import { Linking } from "react-native";
 
-const MenuDetailScreen = () => {
+const MenuDetailScreen = ({ route, navigation }) => {
+  const { id } = route.params;
   const { cartItems, getTotal, updateQuantity, removeFromCart } = useCart();
-  const navigation = useNavigation();
-  const route = useRoute();
-  const { item, id } = route.params;
 
   const handleBackPress = () => {
     navigation.goBack();
   };
+  const handleCheckout = async () => {
+    try {
+      const totalAmount = getTotal() + 50;
+  
+      const response = await axios.post(`${API_URL}/api/payment/create-checkout-session`, {
+        amount: totalAmount,
+      });
+  
+      const checkoutUrl = response.data.url; // ✅ get the full URL
+      Linking.openURL(checkoutUrl);          // ✅ open in external browser
+    } catch (error) {
+      console.error("Stripe Checkout error:", error);
+    }
+  };
+  
 
   return (
     <View style={styles.container}>
@@ -88,10 +103,7 @@ const MenuDetailScreen = () => {
 
         <TouchableOpacity
           style={styles.checkoutButton}
-          onPress={() => {
-            navigation.navigate("CheckoutScreen", { id }); // Pass the 'id' as a route param
-            console.log("Navigating to Checkout with ID:", id);
-          }}
+          onPress={handleCheckout}
         >
           <Text style={styles.checkoutText}>CHECKOUT ↗</Text>
         </TouchableOpacity>

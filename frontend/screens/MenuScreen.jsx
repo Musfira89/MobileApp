@@ -154,6 +154,7 @@ const MenuScreen = ({ navigation, route }) => {
                   navigation.navigate("MenuDetailScreen", {
                     item: selectedItem,
                     id: selectedItem.id,
+                    id,
                   });
                 }}
               >

@@ -14,4 +14,5 @@ router.get("/:id", getRestaurantDetails);
 router.post("/:id/check-reservation", checkReservationAvailability);
 
 
+
 export default router;
