@@ -10,9 +10,6 @@ import {
 import Navbar from "../components/Common/Navbar";
 import Header from "../components/Common/Header";
 import { useCart } from "../context/CartContext";
-import axios from "axios";
-import API_URL from "../config";
-import { Linking } from "react-native";
 
 const MenuDetailScreen = ({ route, navigation }) => {
   const { id } = route.params;
@@ -21,21 +18,11 @@ const MenuDetailScreen = ({ route, navigation }) => {
   const handleBackPress = () => {
     navigation.goBack();
   };
-  const handleCheckout = async () => {
-    try {
-      const totalAmount = getTotal() + 50;
-  
-      const response = await axios.post(`${API_URL}/api/payment/create-checkout-session`, {
-        amount: totalAmount,
-      });
-  
-      const checkoutUrl = response.data.url; // ✅ get the full URL
-      Linking.openURL(checkoutUrl);          // ✅ open in external browser
-    } catch (error) {
-      console.error("Stripe Checkout error:", error);
-    }
+
+  const handleCheckout = () => {
+    const totalAmount = getTotal() + 50; // Calculate Total
+    navigation.navigate("CheckoutScreen", { id, totalAmount }); // Pass Total Amount
   };
-  
 
   return (
     <View style={styles.container}>

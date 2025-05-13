@@ -1,164 +1,386 @@
-// import React, { useState } from 'react';
-// import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
-// import { Ionicons } from '@expo/vector-icons';
-// import Navbar from "../components/Common/Navbar";
-// import Header from "../components/Common/Header";
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  TextInput,
+  StyleSheet,
+  ActivityIndicator,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import Navbar from "../components/Common/Navbar";
+import Header from "../components/Common/Header";
+import SuccessAnimation from "../components/SuccessAnimation";
 
-// const CheckoutScreen = ({ navigation }) => {
-//     const [selectedMethod, setSelectedMethod] = useState('visa');
+const EnhancedCheckoutScreen = ({ route, navigation }) => {
+  const [selectedMethod, setSelectedMethod] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
-//     const handleBackPress = () => {
-//         navigation.goBack();
-//     };
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [country, setCountry] = useState("Pakistan");
 
-//     const paymentMethods = [
-//         { id: 'visa', type: 'Visa', number: '**** **** **** 5967', expiry: '9/25', icon: 'card-outline' },
-//         { id: 'mastercard', type: 'Mastercard', number: '**** **** **** 5967', expiry: '9/25', icon: 'card-outline' },
-//     ];
+  const [cardNumber, setCardNumber] = useState("");
+  const [expiry, setExpiry] = useState("");
+  const [cvv, setCvv] = useState("");
+  const [cardHolder, setCardHolder] = useState("");
 
-//     return (
-//         <View style={styles.container}>
-//             <View style={styles.headerContainer}>
-//                 <Header onBackPress={handleBackPress} />
-//             </View>
-//             <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
-//                 <Text style={styles.title}>Payment Methods</Text>
-//                 <Text style={styles.subtitle}>All transactions are secure and encrypted.</Text>
+  const [otherMethodDetails, setOtherMethodDetails] = useState("");
 
-//                 {paymentMethods.map((method) => (
-//                     <TouchableOpacity
-//                         key={method.id}
-//                         style={[
-//                             styles.paymentMethod,
-//                             { borderColor: selectedMethod === method.id ? 'red' : 'gray' },
-//                         ]}
-//                         onPress={() => setSelectedMethod(method.id)}
-//                     >
-//                         <Ionicons
-//                             name={method.icon}
-//                             size={32}
-//                             color={selectedMethod === method.id ? 'red' : 'gray'}
-//                             style={styles.paymentIcon}
-//                         />
-//                         <View style={styles.paymentDetails}>
-//                             <Text style={styles.paymentNumber}>{method.number}</Text>
-//                             <Text style={styles.paymentExpiry}>Expires {method.expiry}</Text>
-//                         </View>
-//                     </TouchableOpacity>
-//                 ))}
+  const id = route?.params?.id;
+  const totalAmount = route?.params?.totalAmount;
 
-//                 <Text style={styles.secondMethodTitle}>SECOND METHOD</Text>
-//                 <TouchableOpacity
-//                     style={[
-//                         styles.paymentMethod,
-//                         { borderColor: selectedMethod === 'cod' ? 'red' : 'gray' },
-//                     ]}
-//                     onPress={() => setSelectedMethod('cod')}
-//                 >
-//                     <View style={styles.codIconContainer}>
-//                         <Ionicons name="cash-outline" size={24} color="white" />
-//                     </View>
-//                     <View style={styles.paymentDetails}>
-//                         <Text style={styles.paymentNumber}>CASH ON DELIVERY</Text>
-//                         <Text style={styles.paymentExpiry}>Default Method</Text>
-//                     </View>
-//                 </TouchableOpacity>
+  const handleBackPress = () => navigation.goBack();
 
-//                 <TouchableOpacity 
-//                     style={styles.addPaymentButton} 
-//                     onPress={() => navigation.navigate('BookingScreen')} // Navigating to Booking Screen
-//                 >
-//                     <Text style={styles.addPaymentButtonText}>ADD PAYMENT METHOD</Text>
-//                     <Ionicons name="arrow-forward" size={24} color="white" style={styles.addPaymentButtonIcon} />
-//                 </TouchableOpacity>
-//             </ScrollView>
+  const toggleMethod = (methodId) => {
+    setSelectedMethod((prev) => (prev === methodId ? null : methodId));
+  };
 
-//             <Navbar navigation={navigation} />
-//         </View>
-//     );
+  const handlePayment = async () => {
+    if (!fullName || !email || !phoneNumber || !country) {
+      alert("Please fill all personal details.");
+      return;
+    }
+
+    if (!selectedMethod) {
+      alert("Please select a payment method.");
+      return;
+    }
+
+    if (
+      selectedMethod === "visa" &&
+      (!cardNumber || !expiry || !cvv || !cardHolder)
+    ) {
+      alert("Please fill in all Visa/Mastercard details.");
+      return;
+    }
+
+    if (
+      (selectedMethod === "jazzcash" || selectedMethod === "bank") &&
+      !otherMethodDetails
+    ) {
+      alert(
+        `Please provide ${
+          selectedMethod === "jazzcash" ? "JazzCash" : "Bank"
+        } details.`
+      );
+      return;
+    }
+
+    setLoading(true);
+    try {
+      setShowSuccess(true);
+      setTimeout(() => navigation.navigate("BookingScreen", { id }), 2000);
+    } catch (error) {
+      console.error("Payment Error:", error);
+      alert("An error occurred while processing payment.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (showSuccess) return <SuccessAnimation />;
+
+  const paymentMethods = [
+    { id: "visa", type: "Visa / Mastercard" },
+    { id: "jazzcash", type: "JazzCash" },
+    { id: "bank", type: "Bank Transfer" },
+  ];
+
+  return (
+    <View style={styles.container}>
+      <Header onBackPress={handleBackPress} />
+
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <Text style={styles.checkoutHeader}>Total Menu Items + Tax</Text>
+        <Text style={styles.checkoutAmount}>
+          Rs. {totalAmount?.toLocaleString()}
+        </Text>
+
+        <Text style={styles.label}>Email</Text>
+        <TextInput
+          style={styles.input}
+          keyboardType="email-address"
+          value={email}
+          onChangeText={setEmail}
+          autoCorrect={false}
+          autoComplete="off"
+          textContentType="none"
+        />
+
+        <Text style={styles.label}>Full Name</Text>
+        <TextInput
+          style={styles.input}
+          value={fullName}
+          onChangeText={setFullName}
+          autoCorrect={false}
+          autoComplete="off"
+          textContentType="none"
+        />
+
+        <Text style={styles.label}>Phone Number</Text>
+        <TextInput
+          style={styles.input}
+          keyboardType="phone-pad"
+          value={phoneNumber}
+          onChangeText={setPhoneNumber}
+          autoCorrect={false}
+          autoComplete="off"
+          textContentType="none"
+        />
+
+        <Text style={styles.sectionTitle}>Payment Method</Text>
+
+        {paymentMethods.map((method) => (
+          <View key={method.id} style={styles.methodContainer}>
+            <TouchableOpacity
+              style={styles.paymentMethod}
+              onPress={() => toggleMethod(method.id)}
+            >
+              <Text style={styles.paymentType}>{method.type}</Text>
+              <Ionicons
+                name={selectedMethod === method.id ? "chevron-up" : "chevron-down"}
+                size={20}
+                color="#0056d2"
+              />
+            </TouchableOpacity>
+
+            {selectedMethod === method.id && (
+              <View style={styles.methodDetails}>
+                {method.id === "visa" ? (
+                  <>
+                    <TextInput
+                      style={styles.input}
+                      placeholder="1234 1234 1234 1234"
+                      placeholderTextColor="#aaa"
+                      value={cardNumber}
+                      onChangeText={setCardNumber}
+                      keyboardType="numeric"
+                    />
+                    <View style={styles.inlineRow}>
+                      <TextInput
+                        style={[styles.input, styles.halfInput]}
+                        placeholder="MM/YY"
+                        value={expiry}
+                        onChangeText={setExpiry}
+                        keyboardType="numeric"
+                      />
+                      <TextInput
+                        style={[styles.input, styles.halfInput, { marginLeft: 12 }]}
+                        placeholder="CVC"
+                        value={cvv}
+                        onChangeText={setCvv}
+                        keyboardType="numeric"
+                        secureTextEntry
+                      />
+                    </View>
+                    <TextInput
+                      style={styles.input}
+                      placeholder="Cardholder Name"
+                      value={cardHolder}
+                      onChangeText={setCardHolder}
+                    />
+                  </>
+                ) : (
+                  <TextInput
+                    style={styles.input}
+                    placeholder={`Enter ${method.type} Account / Transaction Info`}
+                    value={otherMethodDetails}
+                    onChangeText={setOtherMethodDetails}
+                  />
+                )}
+              </View>
+            )}
+          </View>
+        ))}
+
+        <Text style={styles.label}>Country</Text>
+        <TextInput
+          style={styles.input}
+          value={country}
+          onChangeText={setCountry}
+        />
+
+        <TouchableOpacity
+          style={styles.payButton}
+          onPress={handlePayment}
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.payButtonText}>Pay Now</Text>
+          )}
+        </TouchableOpacity>
+      </ScrollView>
+
+      <Navbar navigation={navigation} />
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: "#f9f9f9", paddingHorizontal: 24 },
+  scrollContent: { paddingBottom: 80 },
+  checkoutHeader: { fontSize: 20, color: "#666", marginTop: 80, textAlign: "center" },
+  checkoutAmount: { fontSize: 48, fontWeight: "bold", color: "#000", textAlign: "center", marginBottom: 50 },
+  label: { fontWeight: "600", color: "#555", marginTop: 18, fontSize: 18 },
+  input: { borderWidth: 1, borderColor: "#e0e0e0", padding: 16, borderRadius: 12, fontSize: 18, backgroundColor: "#fff", marginTop: 8, color: "#333" },
+  halfInput: { flex: 1 },
+  inlineRow: { flexDirection: "row", justifyContent: "space-between", marginTop: 8 },
+  sectionTitle: { fontSize: 20, fontWeight: "bold", color: "#555", marginVertical: 25 },
+  methodContainer: { marginBottom: 16 },
+  paymentMethod: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", padding: 16, borderWidth: 1, borderColor: "#e0e0e0", borderRadius: 12, backgroundColor: "#fff" },
+  paymentType: { fontSize: 18, fontWeight: "500", color: "#333" },
+  methodDetails: { marginTop: 15 },
+  payButton: { backgroundColor: "#0056d2", paddingVertical: 18, borderRadius: 12, marginTop: 30, marginBottom: 40, alignItems: "center", shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 6, elevation: 5 },
+  payButtonText: { color: "#fff", fontSize: 22, fontWeight: "bold" },
+});
+
+export default EnhancedCheckoutScreen;
+
+
+
+// import React, { useState } from "react";
+// import {
+//   View,
+//   Text,
+//   TextInput,
+//   TouchableOpacity,
+//   StyleSheet,
+//   ActivityIndicator,
+// } from "react-native";
+// import axios from "axios";
+// import API_URL from "../config";
+// import SuccessAnimation from "../components/SuccessAnimation";
+
+// const CheckoutScreen = ({ route, navigation }) => {
+//   const { id, totalAmount } = route.params;
+//   const [cardNumber, setCardNumber] = useState("");
+//   const [expiry, setExpiry] = useState("");
+//   const [cvv, setCvv] = useState("");
+//   const [loading, setLoading] = useState(false);
+//   const [showSuccess, setShowSuccess] = useState(false);
+
+//   const handlePayment = async () => {
+//     setLoading(true);
+//     try {
+//       const response = await axios.post(`${API_URL}/api/payment/process-payment`, {
+//         amount: totalAmount,
+//         cardNumber,
+//         expiry,
+//         cvv,
+//       });
+
+//       if (response.data.success) {
+//         setShowSuccess(true);
+//         setTimeout(() => {
+//           navigation.navigate("BookingScreen", { id });
+//         }, 2000);
+//       } else {
+//         alert("Payment failed. Please try again.");
+//       }
+//     } catch (error) {
+//       console.error("Payment Error:", error);
+//       alert("An error occurred during payment.");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   if (showSuccess) {
+//     return <SuccessAnimation />;
+//   }
+
+//   return (
+//     <View style={styles.container}>
+//       <Text style={styles.title}>Secure Payment</Text>
+//       <Text style={styles.amountText}>Total Amount: Rs. {totalAmount}</Text>
+
+//       <TextInput
+//         style={styles.input}
+//         placeholder="Card Number"
+//         placeholderTextColor="#777"
+//         keyboardType="numeric"
+//         value={cardNumber}
+//         onChangeText={(text) => setCardNumber(text)}
+//       />
+//       <TextInput
+//         style={styles.input}
+//         placeholder="Expiry (MM/YY)"
+//         placeholderTextColor="#777"
+//         value={expiry}
+//         onChangeText={(text) => setExpiry(text)}
+//       />
+//       <TextInput
+//         style={styles.input}
+//         placeholder="CVV"
+//         placeholderTextColor="#777"
+//         secureTextEntry
+//         value={cvv}
+//         onChangeText={(text) => setCvv(text)}
+//       />
+
+//       <TouchableOpacity
+//         style={styles.paymentButton}
+//         onPress={handlePayment}
+//         disabled={loading}
+//       >
+//         {loading ? (
+//           <ActivityIndicator color="#fff" />
+//         ) : (
+//           <Text style={styles.paymentText}>Pay Now</Text>
+//         )}
+//       </TouchableOpacity>
+//     </View>
+//   );
 // };
 
 // const styles = StyleSheet.create({
-//     container: {
-//         flex: 1,
-//         backgroundColor: '#fff',
-//     },
-//     headerContainer: {
-//         position: 'absolute',
-//         top: 0,
-//         left: 0,
-//         right: 0,
-//         zIndex: 1,
-//     },
-//     scrollView: {
-//         paddingTop: 60, // Adjust this value based on the height of your header
-//         paddingHorizontal: 16,
-//     },
-//     scrollContent: {
-//         paddingBottom: 80, // Adjust this value to avoid overlapping with the navbar
-//     },
-//     title: {
-//         fontSize: 24,
-//         fontWeight: 'bold',
-//         color: 'black',
-//         marginTop: 16,
-//     },
-//     subtitle: {
-//         color: 'gray',
-//         marginTop: 8,
-//     },
-//     paymentMethod: {
-//         flexDirection: 'row',
-//         alignItems: 'center',
-//         padding: 16,
-//         marginTop: 24,
-//         borderWidth: 1,
-//         borderRadius: 16,
-//     },
-//     paymentIcon: {
-//         marginRight: 16,
-//     },
-//     paymentDetails: {
-//         flex: 1,
-//     },
-//     paymentNumber: {
-//         fontSize: 18,
-//         fontWeight: '500',
-//         color: 'black',
-//     },
-//     paymentExpiry: {
-//         color: 'gray',
-//     },
-//     secondMethodTitle: {
-//         fontSize: 18,
-//         fontWeight: 'bold',
-//         color: 'black',
-//         marginTop: 32,
-//     },
-//     codIconContainer: {
-//         backgroundColor: '#DD1717',
-//         padding: 8,
-//         borderRadius: 16,
-//         marginRight: 16,
-//     },
-//     addPaymentButton: {
-//         backgroundColor: '#DD1717',
-//         padding: 16,
-//         borderRadius: 16,
-//         marginTop: 32,
-//         flexDirection: 'row',
-//         alignItems: 'center',
-//         justifyContent: 'center',
-//     },
-//     addPaymentButtonText: {
-//         color: 'white',
-//         fontSize: 18,
-//         fontWeight: 'bold',
-//     },
-//     addPaymentButtonIcon: {
-//         marginLeft: 8,
-//     },
+//   container: {
+//     flex: 1,
+//     padding: 20,
+//     backgroundColor: "#121212",
+//     justifyContent: "center",
+//   },
+//   title: {
+//     fontSize: 24,
+//     fontWeight: "bold",
+//     color: "#fff",
+//     marginBottom: 20,
+//     textAlign: "center",
+//   },
+//   amountText: {
+//     fontSize: 18,
+//     fontWeight: "bold",
+//     color: "#14a5ff",
+//     textAlign: "center",
+//     marginBottom: 15,
+//   },
+//   input: {
+//     borderWidth: 1,
+//     borderColor: "#333",
+//     padding: 12,
+//     marginVertical: 10,
+//     borderRadius: 10,
+//     color: "#fff",
+//     backgroundColor: "#1E1E1E",
+//   },
+//   paymentButton: {
+//     backgroundColor: "#14a5ff",
+//     padding: 15,
+//     borderRadius: 10,
+//     alignItems: "center",
+//     marginTop: 20,
+//   },
+//   paymentText: {
+//     color: "#fff",
+//     fontWeight: "bold",
+//     fontSize: 18,
+//   },
 // });
 
 // export default CheckoutScreen;
-

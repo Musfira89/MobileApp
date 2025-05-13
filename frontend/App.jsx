@@ -4,6 +4,7 @@ import { SafeAreaView, StyleSheet } from "react-native";
 import AppNavigator from "./AppNavigator";
 import { CartProvider } from "./context/CartContext";
 
+
 const App = () => {
   return (
     <CartProvider>

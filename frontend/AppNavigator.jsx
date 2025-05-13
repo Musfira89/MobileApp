@@ -12,6 +12,7 @@ import MenuDetailScreen from "./screens/MenuDetailScreen";
 import ReservationScreen from "./screens/ReservationScreen";
 import ReservationConfirmScreen from "./screens/ReservationConfirmScreen";
 import BookingScreen from "./screens/BookingScreen";
+import CheckoutScreen from "./screens/CheckoutScreen";
 // import TransportScreen from './screens/TransportScreen';
 // import LocationPickerScreen from './screens/LocationPickerScreen';
 
@@ -37,10 +38,10 @@ const AppNavigator = () => {
           name="ReservationConfirmScreen"
           component={ReservationConfirmScreen}
         ></Stack.Screen>
-        {/* <Stack.Screen
+        <Stack.Screen
           name="CheckoutScreen"
           component={CheckoutScreen}
-        ></Stack.Screen> */}
+        ></Stack.Screen>
         <Stack.Screen
           name="BookingScreen"
           component={BookingScreen}

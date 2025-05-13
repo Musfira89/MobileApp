@@ -40,9 +40,7 @@ const RestaurantCard = ({ restaurant }) => {
           </View>
 
           {/* Rating */}
-          <Text style={styles.rating}>
-            {restaurant.rating}/5 ⭐⭐⭐⭐⭐
-          </Text>
+          <Text style={styles.rating}>{restaurant.rating}/5 ⭐⭐⭐⭐⭐</Text>
 
           {/* Location & Reserve Button */}
           <View style={styles.infoRow}>
@@ -68,12 +66,12 @@ const styles = StyleSheet.create({
   },
   imageBackground: {
     width: "100%",
-    height: 240,
+    height: 260,
     justifyContent: "flex-end",
   },
   overlay: {
     backgroundColor: "rgba(0, 0, 0, 0.7)",
-    padding: 18,
+    padding: 35,
     borderRadius: 15,
   },
   logo: {
@@ -81,29 +79,32 @@ const styles = StyleSheet.create({
     height: 40,
     resizeMode: "contain",
     alignSelf: "flex-start",
-    marginBottom: 8,
+    marginBottom: 10,
   },
   detailsContainer: {
-    marginBottom: 8,
+    marginBottom: 10,
   },
   name: {
     fontSize: 22,
     fontWeight: "bold",
     color: "#fff",
+    marginBottom: 4,
   },
   cuisine: {
     fontSize: 14,
     color: "#ccc",
+    marginBottom: 12,
   },
   rating: {
     color: "#fff",
     fontSize: 14,
-    marginBottom: 10,
+    marginBottom: 12,
   },
   infoRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    marginTop: 8,
   },
   location: {
     fontSize: 12,

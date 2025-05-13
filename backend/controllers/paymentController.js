@@ -1,39 +1,20 @@
 // controllers/paymentController.js
 
-import Stripe from "stripe";
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
-export const createCheckoutSession = async (req, res) => {
-  const { amount } = req.body;
+export const processPayment = async (req, res) => {
+  const { amount, cardNumber, expiry, cvv, fullName, email, phoneNumber } = req.body;
 
   try {
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
-      line_items: [
-        {
-          price_data: {
-            currency: "usd",
-            product_data: {
-              name: "Total Menu Items + Tax",
-            },
-            unit_amount: amount * 100, // amount in cents
-          },
-          quantity: 1,
-        },
-      ],
-      mode: "payment",
-      success_url: `https://google.com`, // TEMP
-      cancel_url: `https://google.com`,  // TEMP
-    });
-    
-    // ✅ Send back session.url (not session.id)
-    res.status(200).json({ url: session.url });
-    
-    
+    // Simulate payment processing (replace with actual logic if needed)
+    if (cardNumber && expiry && cvv && fullName && email && phoneNumber) {
+      // Log the payment data
+      console.log("Processing Payment:", { amount, cardNumber, expiry, cvv, fullName, email, phoneNumber });
 
-    res.status(200).json({ id: session.id });
+      return res.status(200).json({ success: true, message: "Payment Successful" });
+    } else {
+      return res.status(400).json({ success: false, message: "Invalid Payment Details" });
+    }
   } catch (error) {
-    console.error("Error creating checkout session:", error.message);
-    res.status(500).json({ error: "Unable to create checkout session" });
+    console.error("Payment Processing Error:", error);
+    res.status(500).json({ success: false, message: "Payment Failed" });
   }
 };
