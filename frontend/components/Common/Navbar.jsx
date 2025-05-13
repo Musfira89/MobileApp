@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons'; // Ensure you install `expo-vector-icons` or react-native-vector-icons
+import { Ionicons } from '@expo/vector-icons'; // Ensure you install expo-vector-icons or react-native-vector-icons
 
 const Navbar = ({ navigation }) => {
   return (
@@ -9,7 +9,7 @@ const Navbar = ({ navigation }) => {
         <Ionicons name="restaurant" size={24} color="#fff" />
         <Text style={styles.navText}>Explore</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate('Reservations')} style={styles.navItem}>
+      <TouchableOpacity onPress={() => navigation.navigate('Reservationsummary')} style={styles.navItem}>
         <Ionicons name="book" size={24} color="#fff" />
         <Text style={styles.navText}>Reservations</Text>
       </TouchableOpacity>
@@ -17,7 +17,7 @@ const Navbar = ({ navigation }) => {
         <Ionicons name="car" size={24} color="#fff" />
         <Text style={styles.navText}>Transport</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate('More')} style={styles.navItem}>
+      <TouchableOpacity onPress={() => navigation.navigate('UserProfile')} style={styles.navItem}>
         <Ionicons name="menu" size={24} color="#fff" />
         <Text style={styles.navText}>More</Text>
       </TouchableOpacity>
