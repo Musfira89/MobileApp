@@ -105,14 +105,6 @@ export default function ReservationScreen({ route, navigation }) {
     }
   };
 
-  const handleSelectionChange = (type, value) => {
-    if (type === "date") setSelectedDateIndex(value);
-    if (type === "guests") setSelectedGuests(value);
-    if (type === "time") setSelectedTime(value);
-    setAvailabilityStatus(null);
-  };
-
-  const handleBackPress = () => navigation.goBack();
   // Save the reservation data to Firestore
   const saveReservationData = async () => {
     const reservationData = {
@@ -133,6 +125,15 @@ export default function ReservationScreen({ route, navigation }) {
       console.error("Error saving reservation:", err);
     }
   };
+
+  const handleSelectionChange = (type, value) => {
+    if (type === "date") setSelectedDateIndex(value);
+    if (type === "guests") setSelectedGuests(value);
+    if (type === "time") setSelectedTime(value);
+    setAvailabilityStatus(null);
+  };
+
+  const handleBackPress = () => navigation.goBack();
 
   return (
     <View style={styles.container}>

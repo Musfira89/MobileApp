@@ -15,10 +15,8 @@ import BookingScreen from "./screens/BookingScreen";
 import CheckoutScreen from "./screens/CheckoutScreen";
 // import TransportScreen from './screens/TransportScreen';
 // import LocationPickerScreen from './screens/LocationPickerScreen';
-import Reservationsummary from './screens/Reservationsummary'
-import UserProfile from './screens/UserProfile'
-//import UserProfile from './screens/UserProfile'
-
+import Reservationsummary from "./screens/Reservationsummary";
+import UserProfile from "./screens/UserProfile";
 
 const Stack = createStackNavigator();
 
@@ -52,8 +50,11 @@ const AppNavigator = () => {
         ></Stack.Screen>
         {/* <Stack.Screen name="TransportScreen" component={TransportScreen} /> */}
         {/* <Stack.Screen name="LocationPickerScreen" component={LocationPickerScreen} /> */}
-         <Stack.Screen name="Reservationsummary" component={Reservationsummary}/>
-        <Stack.Screen name="UserProfile" component={UserProfile}/>
+        <Stack.Screen
+          name="Reservationsummary"
+          component={Reservationsummary}
+        />
+        <Stack.Screen name="UserProfile" component={UserProfile} />
       </Stack.Navigator>
     </NavigationContainer>
   );

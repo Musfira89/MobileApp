@@ -1,8 +1,9 @@
 import React from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons'; // Ensure you install expo-vector-icons or react-native-vector-icons
+import { Ionicons } from '@expo/vector-icons'; 
 
-const Navbar = ({ navigation }) => {
+const Navbar = ({ navigation}) => {
+
   return (
     <View style={styles.navbar}>
       <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')} style={styles.navItem}>

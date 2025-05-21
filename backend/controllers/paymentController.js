@@ -1,17 +1,25 @@
-// controllers/paymentController.js
-
+//for payment
 export const processPayment = async (req, res) => {
-  const { amount, cardNumber, expiry, cvv, fullName, email, phoneNumber } = req.body;
+  const { amount, fullName, email, phoneNumber, method, details } = req.body;
 
   try {
-    // Simulate payment processing (replace with actual logic if needed)
-    if (cardNumber && expiry && cvv && fullName && email && phoneNumber) {
-      // Log the payment data
-      console.log("Processing Payment:", { amount, cardNumber, expiry, cvv, fullName, email, phoneNumber });
+    if (fullName && email && phoneNumber && method && details) {
+      console.log("Processing Payment:", {
+        amount,
+        fullName,
+        email,
+        phoneNumber,
+        method,
+        details,
+      });
 
-      return res.status(200).json({ success: true, message: "Payment Successful" });
+      return res
+        .status(200)
+        .json({ success: true, message: "Payment Successful" });
     } else {
-      return res.status(400).json({ success: false, message: "Invalid Payment Details" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid Payment Details" });
     }
   } catch (error) {
     console.error("Payment Processing Error:", error);

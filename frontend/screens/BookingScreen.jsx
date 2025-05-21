@@ -14,12 +14,18 @@ import axios from "axios";
 import API_URL from "../config";
 
 const BookingScreen = ({ navigation, route }) => {
-  const { id } = route.params; 
+  const { id } = route.params;
   const [fullName, setFullName] = useState("");
   const [reservationDay, setReservationDay] = useState("");
   const [guestCount, setGuestCount] = useState("");
   const [reservationTime, setReservationTime] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState("Card (Pending)"); 
+  const [paymentMethod, setPaymentMethod] = useState(
+    route.params?.paymentMethod || ""
+  );
+  const [totalAmount, setTotalAmount] = useState(
+    route.params?.totalAmount || ""
+  );
+
   const [phoneNumber, setPhoneNumber] = useState("");
   const [email, setEmail] = useState("");
   const [specialRequest, setSpecialRequest] = useState("");
@@ -28,14 +34,45 @@ const BookingScreen = ({ navigation, route }) => {
   const [availableTimes, setAvailableTimes] = useState([]);
 
   const handleReservation = async () => {
-   
+    try {
+      const reservationData = {
+        fullName,
+        email,
+        phoneNumber,
+        reservationDay,
+        reservationTime,
+        guestCount,
+        paymentMethod,
+        totalAmount, 
+        specialRequest,
+      };
+
+      const response = await axios.post(
+        `${API_URL}/api/reservations/${id}/create`,
+        reservationData
+      );
+
+      if (response.data.success) {
+        navigation.navigate("ReservationConfirmScreen", {
+          id: response.data.reservationId,
+        });
+      } else {
+        alert("Failed to create reservation. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error saving reservation:", error);
+      alert("Error saving reservation. Please try again.");
+    }
   };
+
   const handleBackPress = () => {
     navigation.goBack();
   };
 
   useEffect(() => {
     console.log("Reservation ID from route:", id);
+    console.log("Selected payment method:", route.params?.paymentMethod);
+    console.log("Total Amount:", route.params?.totalAmount);
 
     const fetchUserDetails = async () => {
       const auth = getAuth();
