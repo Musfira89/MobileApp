@@ -1,21 +1,22 @@
-import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-import SplashScreen from "./screens/SplashScreen";
+import React from "react";
+import EmailVerify from "./screens/Auth/EmailVerify";
 import Login from "./screens/Auth/Login";
 import Signup from "./screens/Auth/Signup";
-import EmailVerify from "./screens/Auth/EmailVerify";
-import HomeScreen from "./screens/HomeScreen";
-import RestaurantScreen from "./screens/RestaurantScreen";
-import MenuScreen from "./screens/MenuScreen";
-import MenuDetailScreen from "./screens/MenuDetailScreen";
-import ReservationScreen from "./screens/ReservationScreen";
-import ReservationConfirmScreen from "./screens/ReservationConfirmScreen";
 import BookingScreen from "./screens/BookingScreen";
 import CheckoutScreen from "./screens/CheckoutScreen";
-// import TransportScreen from './screens/TransportScreen';
-// import LocationPickerScreen from './screens/LocationPickerScreen';
+import HomeScreen from "./screens/HomeScreen";
+import MenuDetailScreen from "./screens/MenuDetailScreen";
+import MenuScreen from "./screens/MenuScreen";
+import ReservationConfirmScreen from "./screens/ReservationConfirmScreen";
+import ReservationScreen from "./screens/ReservationScreen";
 import Reservationsummary from "./screens/Reservationsummary";
+import RestaurantScreen from "./screens/RestaurantScreen";
+import SplashScreen from "./screens/SplashScreen";
+import BookedRideScreen from './screens/Transport/BookedRideScreen';
+import RideSelectionScreen from './screens/Transport/RideSelectionScreen';
+import SplashScreen1 from './screens/Transport/SplashScreen1';
 import UserProfile from "./screens/UserProfile";
 
 const Stack = createStackNavigator();
@@ -48,13 +49,15 @@ const AppNavigator = () => {
           name="BookingScreen"
           component={BookingScreen}
         ></Stack.Screen>
-        {/* <Stack.Screen name="TransportScreen" component={TransportScreen} /> */}
-        {/* <Stack.Screen name="LocationPickerScreen" component={LocationPickerScreen} /> */}
         <Stack.Screen
           name="Reservationsummary"
           component={Reservationsummary}
         />
         <Stack.Screen name="UserProfile" component={UserProfile} />
+
+        <Stack.Screen name="SplashScreen1" component={SplashScreen1} ></Stack.Screen>
+        <Stack.Screen name="RideSelection" component={RideSelectionScreen} ></Stack.Screen>
+        <Stack.Screen name="BookedRide" component={BookedRideScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -1,25 +1,27 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useNavigation } from "@react-navigation/native";
+import axios from "axios"; // Make sure this is imported
+import React, { useEffect, useRef, useState } from "react";
 import {
-  View,
-  Text,
+  Animated,
+  Image,
+  ImageBackground,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+  ScrollView,
   StyleSheet,
+  Text,
   TextInput,
   TouchableOpacity,
-  ImageBackground,
-  SafeAreaView,
-  Image,
-  KeyboardAvoidingView,
-  ScrollView,
-  Platform,
-  Animated,
+  View,
 } from "react-native";
-import Icon from "react-native-vector-icons/Ionicons";
 import { Checkbox } from "react-native-paper";
-import { useNavigation } from "@react-navigation/native";
+import Icon from "react-native-vector-icons/Ionicons";
 import API_URL from "../../config";
 
 const Signup = () => {
   const navigation = useNavigation();
+
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -27,6 +29,7 @@ const Signup = () => {
     password: "",
   });
 
+  const [error, setError] = useState(""); // Added error state
   const [isChecked, setChecked] = useState(false);
   const [isPasswordVisible, setPasswordVisible] = useState(false);
   const slideAnim = useRef(new Animated.Value(500)).current;
@@ -43,10 +46,48 @@ const Signup = () => {
     setFormData({ ...formData, [name]: value });
   };
 
+  const handleSubmit = async () => {
+    setError(""); // Clear previous errors
+
+    // Validation
+    if (
+      !formData.fullName ||
+      !formData.email ||
+      !formData.phoneNumber ||
+      !formData.password
+    ) {
+      setError("All fields are required.");
+      return;
+    }
+
+    if (!isChecked) {
+      setError("You must agree to the terms and conditions.");
+      return;
+    }
+
+    try {
+      const response = await axios.post(`${API_URL}/api/auth/signup`, formData);
+
+      if (response.status === 200) {
+        navigation.navigate("EmailVerify", { email: formData.email });
+      } else {
+        setError("Signup failed. Please try again.");
+      }
+    } catch (error) {
+      setError(error.response?.data?.error || "Something went wrong!");
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      <ImageBackground source={require("../../assets/images/bgimg.png")} style={styles.backgroundImage}>
-        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+      <ImageBackground
+        source={require("../../assets/images/bgimg.png")}
+        style={styles.backgroundImage}
+      >
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={{ flex: 1 }}
+        >
           <ScrollView contentContainerStyle={styles.scrollView}>
             <View style={styles.headerContainer}>
               <Text style={styles.heading}>Create an account.</Text>
@@ -55,10 +96,20 @@ const Signup = () => {
               </Text>
             </View>
 
-            <Animated.View style={[styles.blackContainer, { transform: [{ translateY: slideAnim }] }]}> 
+            <Animated.View
+              style={[
+                styles.blackContainer,
+                { transform: [{ translateY: slideAnim }] },
+              ]}
+            >
               <View style={styles.formContainer}>
                 <View style={styles.inputContainer}>
-                  <Icon name="person" size={20} color="#888" style={styles.icon} />
+                  <Icon
+                    name="person"
+                    size={20}
+                    color="#888"
+                    style={styles.icon}
+                  />
                   <TextInput
                     style={styles.input}
                     placeholder="Full name"
@@ -69,7 +120,12 @@ const Signup = () => {
                 </View>
 
                 <View style={styles.inputContainer}>
-                  <Icon name="mail" size={20} color="#888" style={styles.icon} />
+                  <Icon
+                    name="mail"
+                    size={20}
+                    color="#888"
+                    style={styles.icon}
+                  />
                   <TextInput
                     style={styles.input}
                     placeholder="Email"
@@ -81,7 +137,10 @@ const Signup = () => {
                 </View>
 
                 <View style={styles.inputContainer}>
-                  <Image source={require("../../assets/images/flagIcon.jpg")} style={styles.flagIcon} />
+                  <Image
+                    source={require("../../assets/images/flagIcon.jpg")}
+                    style={styles.flagIcon}
+                  />
                   <Text style={styles.phoneCode}>+92</Text>
                   <TextInput
                     style={[styles.input, { marginLeft: 10 }]}
@@ -89,12 +148,19 @@ const Signup = () => {
                     keyboardType="phone-pad"
                     placeholderTextColor="#888"
                     value={formData.phoneNumber.replace("+92", "")}
-                    onChangeText={(value) => handleChange("phoneNumber", `+92${value}`)}
+                    onChangeText={(value) =>
+                      handleChange("phoneNumber", `+92${value}`)
+                    }
                   />
                 </View>
 
                 <View style={styles.inputContainer}>
-                  <Icon name="lock-closed" size={20} color="#888" style={styles.icon} />
+                  <Icon
+                    name="lock-closed"
+                    size={20}
+                    color="#888"
+                    style={styles.icon}
+                  />
                   <TextInput
                     style={styles.input}
                     placeholder="Password"
@@ -103,24 +169,44 @@ const Signup = () => {
                     value={formData.password}
                     onChangeText={(value) => handleChange("password", value)}
                   />
-                  <TouchableOpacity style={styles.iconRight} onPress={() => setPasswordVisible(!isPasswordVisible)}>
-                    <Icon name={isPasswordVisible ? "eye-off" : "eye"} size={20} color="#888" />
+                  <TouchableOpacity
+                    style={styles.iconRight}
+                    onPress={() => setPasswordVisible(!isPasswordVisible)}
+                  >
+                    <Icon
+                      name={isPasswordVisible ? "eye-off" : "eye"}
+                      size={20}
+                      color="#888"
+                    />
                   </TouchableOpacity>
                 </View>
 
-                <TouchableOpacity style={styles.checkboxContainer} onPress={() => setChecked(!isChecked)}>
-                  <Checkbox status={isChecked ? "checked" : "unchecked"} onPress={() => setChecked(!isChecked)} color="#A87729" />
+                <TouchableOpacity
+                  style={styles.checkboxContainer}
+                  onPress={() => setChecked(!isChecked)}
+                >
+                  <Checkbox
+                    status={isChecked ? "checked" : "unchecked"}
+                    onPress={() => setChecked(!isChecked)}
+                    color="#A87729"
+                  />
                   <Text style={styles.checkboxLabel}>
-                    I agree to the <Text style={styles.link}>Terms & Conditions</Text> & <Text style={styles.link}>Privacy Policy</Text>
+                    I agree to the{" "}
+                    <Text style={styles.link}>Terms & Conditions</Text> &{" "}
+                    <Text style={styles.link}>Privacy Policy</Text>
                   </Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.button}>
+                <TouchableOpacity style={styles.button} onPress={handleSubmit}>
                   <Text style={styles.buttonText}>Create Account</Text>
                 </TouchableOpacity>
 
                 <Text style={styles.loginText}>
-                  Already have an account? <Text style={styles.link} onPress={() => navigation.navigate("Login")}>
+                  Already have an account?{" "}
+                  <Text
+                    style={styles.link}
+                    onPress={() => navigation.navigate("Login")}
+                  >
                     Login
                   </Text>
                 </Text>
@@ -161,9 +247,9 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
     padding: 20,
     paddingBottom: 120,
-    marginTop: 50, 
+    marginTop: 50,
   },
-  
+
   heading: {
     fontSize: 28,
     fontWeight: "bold",
@@ -235,13 +321,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   flagIcon: {
-    width: 24,   // Proper width
-    height: 16,  // Proper height
-    resizeMode: "contain",  // Maintain aspect ratio
-    marginRight: 8,  // Add some spacing
+    width: 24, // Proper width
+    height: 16, // Proper height
+    resizeMode: "contain", // Maintain aspect ratio
+    marginRight: 8, // Add some spacing
     alignSelf: "center", // Proper alignment
   },
-  
 });
 
-export default Signup; 
+export default Signup;

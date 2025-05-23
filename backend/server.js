@@ -1,11 +1,13 @@
-import express from "express";
-import cors from "cors";
 import bodyParser from "body-parser";
+import cors from "cors";
 import dotenv from "dotenv";
+import express from "express";
 import authRoutes from "./routes/authRoutes.js";
-import restaurantRoutes from "./routes/restaurantRoutes.js";
-import reservationsRoutes from "./routes/reservationRoutes.js";
+import bookingRoutes from './routes/bookingRoutes.js';
 import paymentRoutes from "./routes/paymentRoutes.js";
+import reservationsRoutes from "./routes/reservationRoutes.js";
+import restaurantRoutes from "./routes/restaurantRoutes.js";
+import rideRoutes from './routes/rideRoutes.js';
 
 dotenv.config();
 
@@ -24,6 +26,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/restaurants", restaurantRoutes);
 app.use("/api/reservations", reservationsRoutes);
 app.use("/api/payment", paymentRoutes);
+app.use('/api', bookingRoutes);
+app.use('/api', rideRoutes);
 
 const PORT = process.env.PORT || 5000;
 

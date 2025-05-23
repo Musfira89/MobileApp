@@ -1,21 +1,21 @@
+import axios from "axios";
 import React, { useState } from "react";
 import {
-  View,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-  TextInput,
-  StyleSheet,
   ActivityIndicator,
   Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import Navbar from "../components/Common/Navbar";
-import Header from "../components/Common/Header";
-import SuccessAnimation from "../components/SuccessAnimation";
-import axios from "axios";
 import easypaisa from "../assets/fonts/easyPaisa.png";
 import jazzcash from "../assets/fonts/Jazzcash.png";
 import meezan from "../assets/fonts/meezan.png";
+import Header from "../components/Common/Header";
+import Navbar from "../components/Common/Navbar";
+import SuccessAnimation from "../components/SuccessAnimation";
 import API_URL from "../config";
 
 const EnhancedCheckoutScreen = ({ route, navigation }) => {
