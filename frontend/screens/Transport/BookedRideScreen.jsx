@@ -2,7 +2,6 @@ import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import * as Location from "expo-location";
 import { getAuth } from "firebase/auth";
-import debounce from "lodash.debounce";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -15,10 +14,12 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import MapView, { Marker } from "react-native-maps";
 import Header from "../../components/Common/Header";
 import Navbar from "../../components/Common/Navbar";
 import API_URL from "../../config";
 
+const GOOGLE_API_KEY = "AIzaSyCk1RD6edvLjsdifV-WvCPQ9yHx_voBSd4";
 
 const BookedRideScreen = ({ navigation, route }) => {
   const auth = getAuth();
@@ -29,6 +30,8 @@ const BookedRideScreen = ({ navigation, route }) => {
     latitudeDelta: 0.05,
     longitudeDelta: 0.05,
   });
+  const [destinationCoords, setDestinationCoords] = useState(null);
+  const [pickupCoords, setPickupCoords] = useState(null);
   const [pickupLocation, setPickupLocation] = useState("");
   const [destinationLocation, setDestinationLocation] = useState("");
   const [showSearchModal, setShowSearchModal] = useState(null);
@@ -63,27 +66,30 @@ const BookedRideScreen = ({ navigation, route }) => {
     })();
   }, []);
 
-  // Fetch location suggestions from OpenStreetMap Nominatim API
-  const fetchLocationSuggestions = debounce(async (query) => {
+  const fetchLocationSuggestions = async (query) => {
     try {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?q=${query}&format=json`,
+      const response = await axios.get(
+        `https://maps.googleapis.com/maps/api/place/autocomplete/json`,
         {
-          headers: {
-            "User-Agent": "YourAppName/1.0 (your-email@example.com)", // Replace with your app name and email
+          params: {
+            input: query,
+            key: GOOGLE_API_KEY,
+            types: "geocode",
           },
         }
       );
-      const data = await response.json();
+      const data = response.data.predictions;
       setSuggestions(
         data.map((item) => ({
-          name: item.display_name,
+          name: item.description,
+          placeId: item.place_id,
         }))
       );
     } catch (error) {
       console.error("Error fetching location suggestions:", error);
     }
-  }, 500);
+  };
+
 
   const handleSearchQueryChange = (text) => {
     setSearchQuery(text);
@@ -94,17 +100,49 @@ const BookedRideScreen = ({ navigation, route }) => {
     }
   };
 
-  const handleLocationSelect = (locationName, type) => {
-    if (type === "pickup") {
-      setPickupLocation(locationName);
+  const handleLocationSelect = async (locationName, placeId, type) => {
+    try {
+      const response = await axios.get(
+        `https://maps.googleapis.com/maps/api/place/details/json`,
+        {
+          params: {
+            place_id: placeId,
+            key: GOOGLE_API_KEY,
+          },
+        }
+      );
+      const location = response.data.result.geometry.location;
 
-    } else if (type === "destination") {
-      setDestinationLocation(locationName);
-
+      if (type === "pickup") {
+        setPickupLocation(locationName);
+        setPickupCoords({
+          latitude: location.lat,
+          longitude: location.lng,
+        });
+        setRegion({
+          latitude: location.lat,
+          longitude: location.lng,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+        });
+      } else if (type === "destination") {
+        setDestinationLocation(locationName);
+        setDestinationCoords({
+          latitude: location.lat,
+          longitude: location.lng,
+        });
+        setRegion({
+          latitude: location.lat,
+          longitude: location.lng,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+        });
+      }
+      setShowSearchModal(null);
+    } catch (error) {
+      console.error("Error fetching location details:", error);
     }
-    setShowSearchModal(null);
   };
-
   const handleConfirmRide = async () => {
     const rideData = {
       rideType,
@@ -117,8 +155,7 @@ const BookedRideScreen = ({ navigation, route }) => {
 
     setIsLoading(true);
     try {
-      // Get the Firebase Authentication token
-      const currentUser = auth.currentUser; // Use the initialized auth object
+      const currentUser = auth.currentUser;
       if (!currentUser) {
         Alert.alert("Error", "You must be logged in to confirm a ride.");
         setIsLoading(false);
@@ -126,10 +163,9 @@ const BookedRideScreen = ({ navigation, route }) => {
       }
       const token = await currentUser.getIdToken();
 
-      // Send the ride data to the backend
       const response = await axios.post(`${API_URL}/api/rides`, rideData, {
         headers: {
-          Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -141,6 +177,7 @@ const BookedRideScreen = ({ navigation, route }) => {
       setIsLoading(false);
     }
   };
+
   return (
     <View style={styles.container}>
       <ScrollView style={styles.container}>
@@ -148,14 +185,26 @@ const BookedRideScreen = ({ navigation, route }) => {
           <Header onBackPress={() => navigation.goBack()} />
         </View>
 
-        {/* Map View */}
-        {/* <MapView
+        <MapView
           style={styles.map}
-          provider={PROVIDER_GOOGLE}
           region={region}
           onRegionChangeComplete={(newRegion) => setRegion(newRegion)}
         >
-        </MapView> */}
+          {pickupCoords && (
+            <Marker
+              coordinate={pickupCoords}
+              title="Pickup Location"
+              pinColor="blue"
+            />
+          )}
+          {destinationCoords && (
+            <Marker
+              coordinate={destinationCoords}
+              title="Destination Location"
+              pinColor="red"
+            />
+          )}
+        </MapView>
 
         {/* Ride Details */}
         <View style={styles.bottomContainer}>
@@ -234,8 +283,10 @@ const BookedRideScreen = ({ navigation, route }) => {
             {suggestions.map((suggestion, index) => (
               <TouchableOpacity
                 key={index}
-                style={[styles.suggestionItem, index % 2 === 0 ? { backgroundColor: "#f0f0f0" } : {}]}
-                onPress={() => handleLocationSelect(suggestion.name, showSearchModal)}
+                style={styles.suggestionItem}
+                onPress={() =>
+                  handleLocationSelect(suggestion.name, suggestion.placeId, showSearchModal)
+                }
               >
                 <Text style={styles.suggestionText}>{suggestion.name}</Text>
               </TouchableOpacity>
