@@ -96,8 +96,8 @@ const styles = StyleSheet.create({
     marginTop: 35,
   },
   header: {
-    marginVertical: 10, // Reduced top and bottom spacing
-    paddingHorizontal: 15, // Add some left and right spacing
+    marginVertical: 0, // Reduced top and bottom spacing
+    paddingHorizontal: -4, // Add some left and right spacing
   },
 
   searchContainer: {
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     color: "#333",
-    marginBottom: 35,
+    marginBottom: 22,
   },
 });
 

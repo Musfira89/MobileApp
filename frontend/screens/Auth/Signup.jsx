@@ -1,22 +1,22 @@
-import { useNavigation } from "@react-navigation/native";
-import axios from "axios"; // Make sure this is imported
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
-  Animated,
-  Image,
-  ImageBackground,
-  KeyboardAvoidingView,
-  Platform,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
+  View,
   Text,
+  StyleSheet,
   TextInput,
   TouchableOpacity,
-  View,
+  ImageBackground,
+  SafeAreaView,
+  Image,
+  KeyboardAvoidingView,
+  ScrollView,
+  Platform,
+  Animated,
 } from "react-native";
-import { Checkbox } from "react-native-paper";
 import Icon from "react-native-vector-icons/Ionicons";
+import { Checkbox } from "react-native-paper";
+import { useNavigation } from "@react-navigation/native";
+import axios from "axios"; // Make sure this is imported
 import API_URL from "../../config";
 
 const Signup = () => {
@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   subHeading: {
-    fontSize: 16,
+    fontSize: 14,
     color: "#AAA",
     textAlign: "left",
     marginBottom: 10,
@@ -281,11 +281,11 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     color: "#FFF",
-    fontSize: 16,
+    fontSize: 14,
   },
   phoneCode: {
     color: "#FFF",
-    fontSize: 16,
+    fontSize: 14,
     marginLeft: 2,
   },
   checkboxContainer: {
@@ -295,7 +295,7 @@ const styles = StyleSheet.create({
   },
   checkboxLabel: {
     color: "#AAA",
-    fontSize: 14,
+    fontSize: 12,
     marginLeft: 10,
     flex: 1,
   },
@@ -312,7 +312,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "#FFF",
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "bold",
   },
   loginText: {

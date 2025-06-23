@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     color: '#FFF',
-    fontSize: 16,
+    fontSize: 14,
   },
   forgotPassword: {
     color: '#A87729', // Matches the button color
@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#FFF',
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
   },
   createAccountText: {

@@ -30,8 +30,6 @@ const BookingScreen = ({ navigation, route }) => {
   const [email, setEmail] = useState("");
   const [specialRequest, setSpecialRequest] = useState("");
   const [loading, setLoading] = useState(true);
-  const [dateOptions, setDateOptions] = useState([]);
-  const [availableTimes, setAvailableTimes] = useState([]);
 
   const handleReservation = async () => {
     try {
@@ -43,7 +41,7 @@ const BookingScreen = ({ navigation, route }) => {
         reservationTime,
         guestCount,
         paymentMethod,
-        totalAmount, 
+        totalAmount,
         specialRequest,
       };
 
@@ -69,11 +67,20 @@ const BookingScreen = ({ navigation, route }) => {
     navigation.goBack();
   };
 
-  useEffect(() => {
-    console.log("Reservation ID from route:", id);
-    console.log("Selected payment method:", route.params?.paymentMethod);
-    console.log("Total Amount:", route.params?.totalAmount);
+  const getPaymentIcon = (method) => {
+    switch (method.toLowerCase()) {
+      case "jazzcash":
+        return "📱";
+      case "easypaisa":
+        return "💸";
+      case "meezan bank":
+        return "🏦";
+      default:
+        return "💳";
+    }
+  };
 
+  useEffect(() => {
     const fetchUserDetails = async () => {
       const auth = getAuth();
       const user = auth.currentUser;
@@ -92,16 +99,10 @@ const BookingScreen = ({ navigation, route }) => {
         const response = await axios.get(
           `${API_URL}/api/reservations/${id}/get-reservation`
         );
-
-        // Assuming your backend returns just the date, guests, and time
         const { date, guests, time } = response.data;
-
         setReservationDay(date || "");
         setReservationTime(time || "");
         setGuestCount(guests ? guests.toString() : "");
-
-        setDateOptions([date] || []);
-        setAvailableTimes([time] || []);
       } catch (error) {
         console.error("Error fetching reservation data:", error);
       } finally {
@@ -130,104 +131,83 @@ const BookingScreen = ({ navigation, route }) => {
 
   return (
     <View style={{ flex: 1, backgroundColor: "#000" }}>
-      {/* Header */}
-      <View
-        style={{ position: "absolute", top: 0, left: 0, right: 0, zIndex: 1 }}
-      >
+      <View style={{ position: "absolute", top: 0, left: 0, right: 0, zIndex: 1 }}>
         <Header onBackPress={handleBackPress} />
       </View>
 
-      {/* Form */}
       <ScrollView
         style={{ flex: 1, backgroundColor: "#000", padding: 20, marginTop: 50 }}
+        contentContainerStyle={{ paddingBottom: 40 }}
       >
         <Text
           style={{
             color: "white",
             fontSize: 32,
             fontWeight: "bold",
-            marginBottom: 30,
+            marginBottom: 20,
           }}
         >
           BOOKING ..
         </Text>
 
-        {/* First Row */}
-        <View style={styles.row}>
-          <View style={styles.fieldContainer}>
-            <Text style={styles.label}>FULL NAME</Text>
-            <TextInput
-              value={fullName}
-              editable={false}
-              style={styles.readonlyInput}
-            />
-          </View>
-          <View style={styles.fieldContainer}>
-            <Text style={styles.label}>PHONE NUMBER</Text>
-            <TextInput
-              value={phoneNumber}
-              editable={false}
-              style={styles.readonlyInput}
-            />
-          </View>
+        {/* Full Name */}
+        <View style={styles.fieldWrapper}>
+          <Text style={styles.label}>FULL NAME</Text>
+          <TextInput value={fullName} editable={false} style={styles.readonlyInput} />
         </View>
 
-        {/* Second Row */}
+        {/* Email */}
+        <View style={styles.fieldWrapper}>
+          <Text style={styles.label}>EMAIL</Text>
+          <TextInput
+            value={email}
+            editable={false}
+            style={[styles.readonlyInput, { width: "100%" }]}
+            numberOfLines={1}
+            scrollEnabled
+          />
+        </View>
+
+        {/* Phone Number & Date */}
         <View style={styles.row}>
           <View style={styles.fieldContainer}>
-            <Text style={styles.label}>EMAIL</Text>
-            <TextInput
-              value={email}
-              editable={false}
-              style={styles.readonlyInput}
-            />
+            <Text style={styles.label}>PHONE NUMBER</Text>
+            <TextInput value={phoneNumber} editable={false} style={styles.readonlyInput} />
           </View>
           <View style={styles.fieldContainer}>
             <Text style={styles.label}>RESERVATION DATE</Text>
-            <TextInput
-              value={reservationDay}
-              editable={false}
-              style={styles.readonlyInput}
-            />
+            <TextInput value={reservationDay} editable={false} style={styles.readonlyInput} />
           </View>
         </View>
 
-        {/* Third Row */}
+        {/* Guests & Time */}
         <View style={styles.row}>
           <View style={styles.fieldContainer}>
             <Text style={styles.label}>NO. OF GUESTS</Text>
-            <TextInput
-              value={guestCount}
-              editable={false}
-              style={styles.readonlyInput}
-            />
+            <TextInput value={guestCount} editable={false} style={styles.readonlyInput} />
           </View>
           <View style={styles.fieldContainer}>
             <Text style={styles.label}>TIME</Text>
-            <TextInput
-              value={reservationTime}
-              editable={false}
-              style={styles.readonlyInput}
-            />
+            <TextInput value={reservationTime} editable={false} style={styles.readonlyInput} />
           </View>
         </View>
 
-        {/* Fourth Row */}
-        <View style={styles.row}>
-          <View style={styles.fieldContainer}>
-            <Text style={styles.label}>PAYMENT METHOD</Text>
+        {/* Payment Method */}
+        <View style={styles.fieldWrapper}>
+          <Text style={styles.label}>PAYMENT METHOD</Text>
+          <View style={styles.iconRow}>
+            <Text style={styles.paymentIcon}>{getPaymentIcon(paymentMethod)}</Text>
             <TextInput
               value={paymentMethod}
               editable={false}
-              style={styles.readonlyInput}
+              style={[styles.readonlyInput, { flex: 1, marginLeft: 10 }]}
             />
           </View>
-          <View style={styles.fieldContainer} />
         </View>
 
-        {/* Special Request Section */}
-        <View style={{ marginTop: 30 }}>
-          <Text style={styles.label}>SPECIAL REQUEST</Text>
+        {/* Special Request */}
+        <View style={styles.fieldWrapper}>
+          <Text style={styles.label}>SPECIAL REQUEST 🎁</Text>
           <TextInput
             value={specialRequest}
             onChangeText={setSpecialRequest}
@@ -240,7 +220,6 @@ const BookingScreen = ({ navigation, route }) => {
         </View>
       </ScrollView>
 
-      {/* Confirm Button */}
       <View style={{ padding: 20, backgroundColor: "#000" }}>
         <TouchableOpacity
           onPress={handleReservation}
@@ -263,13 +242,14 @@ const styles = {
   row: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 25,
-    gap: 10, // 👈 Add this line for a small space between fields
+    marginBottom: 20,
+    gap: 10,
   },
-
   fieldContainer: {
     flex: 1,
-    marginHorizontal: 5,
+  },
+  fieldWrapper: {
+    marginBottom: 20,
   },
   label: {
     color: "white",
@@ -289,6 +269,17 @@ const styles = {
     borderRadius: 8,
     textAlignVertical: "top",
     marginTop: 10,
+  },
+  iconRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#222",
+    padding: 10,
+    borderRadius: 8,
+  },
+  paymentIcon: {
+    fontSize: 14,
+    color: "white",
   },
 };
 

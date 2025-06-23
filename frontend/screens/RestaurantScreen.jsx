@@ -141,7 +141,6 @@ export default function RestaurantScreen({ route, navigation }) {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -156,59 +155,60 @@ const styles = StyleSheet.create({
   },
   image: {
     width: "100%",
-    height: 260,
+    height: 220,
     resizeMode: "cover",
   },
   contentContainer: {
-    padding: 15,
+    padding: 12,
   },
   top: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: -15, // Reduced space above the logo
+    marginTop: -10,
   },
   logo: {
-    width: 100,
-    height: 90,
+    width: 90,
+    height: 80,
     resizeMode: "contain",
     marginRight: "auto",
   },
   rating: {
     color: "#fff",
-    fontSize: 14,
+    fontSize: 13,
     marginLeft: "auto",
   },
   title: {
-    fontSize: 34,
+    fontSize: 25,
     fontWeight: "bold",
     color: "#fff",
-    marginTop: -13,
-    marginVertical: 15,
+    marginTop: -10,
+    marginBottom: 10,
   },
   locationCallContainer: {
-    marginTop: 8,
+    marginTop: 4,
   },
   locationCallItem: {
     flexDirection: "row",
     alignItems: "center",
-    marginVertical: 8,
+    marginVertical: 6,
   },
   address: {
     color: "#fff",
-    fontSize: 14,
+    fontSize: 12,
     marginLeft: 8,
     flex: 1,
   },
   callText: {
     color: "#fff",
-    fontSize: 14,
+    fontSize: 12,
     marginLeft: 8,
   },
   icon: {
-    marginRight: 8,
+    marginRight: 6,
+    
   },
   section: {
-    marginVertical: 12, // Reduced space above sections
+    marginVertical: 8,
   },
   sectionItem: {
     flexDirection: "row",
@@ -217,28 +217,29 @@ const styles = StyleSheet.create({
   },
   sectionHeading: {
     color: "#fff",
-    fontSize: 16,
+    fontSize: 13, // updated from 12 to 13
     fontWeight: "bold",
     marginLeft: 8,
   },
   sectionText: {
     color: "#ccc",
-    fontSize: 14,
+    fontSize: 12,
     marginTop: 4,
-    marginBottom: 15,
+    marginBottom: 10,
   },
   divider: {
     borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
-    marginVertical: 8,
+    borderBottomColor: "#444",
+    marginVertical: 6,
   },
   addButton: {
     backgroundColor: "#DD1717",
     borderRadius: 5,
-    paddingVertical: 12,
-    paddingHorizontal: 100,
+    paddingVertical: 10,
+    paddingHorizontal: 80,
     alignItems: "center",
     alignSelf: "center",
+    marginVertical: 10,
   },
   addButtonText: {
     color: "#fff",
@@ -249,16 +250,26 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     paddingVertical: 4,
+    paddingLeft: 20, // ← move day text slightly right
   },
   dayText: {
     color: "#ccc",
-    fontSize: 14,
+    fontSize: 12,
     flex: 1,
   },
   hoursText: {
     color: "#ccc",
-    fontSize: 14,
+    fontSize: 12,
     textAlign: "right",
     flex: 1,
+  },
+  // Optional: Red line indicator (if needed visually)
+  redDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: "#DD1717",
+    marginRight: 6,
+    marginTop: 6,
   },
 });

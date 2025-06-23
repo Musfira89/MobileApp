@@ -1,14 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
   TouchableOpacity,
   ActivityIndicator,
   StyleSheet,
+  ScrollView,
+  Animated,
 } from "react-native";
 import Header from "../components/Common/Header";
 import API_URL from "../config";
 import axios from "axios";
+import { Feather } from "@expo/vector-icons";
 
 export default function ReservationScreen({ route, navigation }) {
   const id = route?.params?.id;
@@ -21,30 +24,25 @@ export default function ReservationScreen({ route, navigation }) {
   const [earliestAvailable, setEarliestAvailable] = useState(null);
   const [dateOptions, setDateOptions] = useState([]);
 
+  const [expandDates, setExpandDates] = useState(false);
+  const [expandGuests, setExpandGuests] = useState(false);
+  const [expandTimes, setExpandTimes] = useState(false);
+
   useEffect(() => {
-    if (!id) {
-      console.warn("No restaurant ID was passed to ReservationScreen");
-    }
+    if (!id) console.warn("No restaurant ID was passed to ReservationScreen");
     generateDateOptions();
   }, []);
 
   const generateDateOptions = () => {
     const options = [];
     const today = new Date();
-
     for (let i = 1; i <= 7; i++) {
       const nextDate = new Date(today);
       nextDate.setDate(today.getDate() + i);
-      const dayName = nextDate.toLocaleDateString("en-US", {
-        weekday: "short",
-      });
-      const dateString = nextDate.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-      });
+      const dayName = nextDate.toLocaleDateString("en-US", { weekday: "short" });
+      const dateString = nextDate.toLocaleDateString("en-US", { month: "short", day: "numeric" });
       options.push({ label: `${dayName}, ${dateString}`, dateObj: nextDate });
     }
-
     setDateOptions(options);
   };
 
@@ -53,44 +51,26 @@ export default function ReservationScreen({ route, navigation }) {
     for (let hour = 15; hour <= 22; hour++) {
       const date = new Date();
       date.setHours(hour, 0, 0);
-      const formatted = date.toLocaleTimeString([], {
-        hour: "numeric",
-        minute: "2-digit",
-        hour12: true,
-      });
-      times.push(formatted);
+      times.push(date.toLocaleTimeString([], { hour: "numeric", minute: "2-digit", hour12: true }));
     }
     return times;
   };
 
   const checkAvailability = async () => {
-    if (!id || !dateOptions[selectedDateIndex]) {
-      console.warn("Invalid restaurant ID or selected date.");
-      return;
-    }
-
+    if (!id || !dateOptions[selectedDateIndex]) return;
     setLoading(true);
     const selectedDate = dateOptions[selectedDateIndex].dateObj;
     const formattedDate = selectedDate.toISOString().split("T")[0];
-    const reservationKey = `${formattedDate}_${selectedTime
-      .replace(/ /g, "_")
-      .toUpperCase()}`;
-    console.log("Reservation Key:", reservationKey);
 
     try {
-      const response = await axios.post(
-        `${API_URL}/api/restaurants/${id}/check-reservation`,
-        {
-          date: formattedDate,
-          time: selectedTime.replace(/ /g, "_").toUpperCase(),
-        }
-      );
-
+      const response = await axios.post(`${API_URL}/api/restaurants/${id}/check-reservation`, {
+        date: formattedDate,
+        time: selectedTime.replace(/ /g, "_").toUpperCase(),
+      });
       const { available, earliestTime, noData } = response.data;
 
-      if (noData) {
-        setAvailabilityStatus("nodata");
-      } else if (available === true) {
+      if (noData) setAvailabilityStatus("nodata");
+      else if (available) {
         setAvailabilityStatus("available");
         setEarliestAvailable(null);
       } else {
@@ -98,14 +78,13 @@ export default function ReservationScreen({ route, navigation }) {
         setEarliestAvailable(earliestTime || null);
       }
     } catch (err) {
-      console.error("Error checking availability:", err);
+      console.error(err);
       setAvailabilityStatus("unavailable");
     } finally {
       setLoading(false);
     }
   };
 
-  // Save the reservation data to Firestore
   const saveReservationData = async () => {
     const reservationData = {
       date: dateOptions[selectedDateIndex].dateObj.toISOString().split("T")[0],
@@ -113,14 +92,13 @@ export default function ReservationScreen({ route, navigation }) {
       guests: selectedGuests,
       restaurantId: id,
     };
-
     try {
       const response = await axios.post(
         `${API_URL}/api/reservations/${id}/save-reservation`,
         reservationData
       );
       console.log("Reservation saved:", response.data);
-      navigation.navigate("MenuScreen", { id }); // Navigate to the Menu screen
+      navigation.navigate("MenuScreen", { id });
     } catch (err) {
       console.error("Error saving reservation:", err);
     }
@@ -133,166 +111,177 @@ export default function ReservationScreen({ route, navigation }) {
     setAvailabilityStatus(null);
   };
 
-  const handleBackPress = () => navigation.goBack();
+  const SelectionSection = ({ title, options, selected, onSelect, expanded, toggleExpand }) => {
+    const displayOptions = expanded ? options : options.slice(0, 3);
+    return (
+      <View style={styles.scrollSection}>
+        <Text style={styles.leftAlignedTitle}>{title}</Text>
+        <View style={styles.optionGrid}>
+          {displayOptions.map((item, index) => {
+            const value = typeof item === "object" ? (item.value ?? index) : item;
+            const isSelected = selected === value;
+            return (
+              <TouchableOpacity
+                key={value}
+                style={[styles.optionCard, isSelected && styles.selectedOption]}
+                onPress={() => onSelect(value)}
+              >
+                <Text style={styles.optionText}>{item.label || item}</Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+
+        {options.length > 3 && (
+          <TouchableOpacity style={styles.showAllButton} onPress={toggleExpand}>
+            <Feather
+              name={expanded ? "chevron-up" : "chevron-down"}
+              size={18}
+              color="#A87729"
+            />
+            <Text style={styles.showAllText}>
+              {expanded ? "Show Less" : "Show All"}
+            </Text>
+          </TouchableOpacity>
+        )}
+      </View>
+    );
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
-        <Header onBackPress={handleBackPress} />
+        <Header title="Reservation" onBackPress={() => navigation.goBack()} />
       </View>
-      <View style={styles.innerContainer}>
-        <Text style={styles.leftAlignedTitle}>DATE OF RESERVATION</Text>
-        <View style={styles.selectionRow}>
-          {dateOptions.map((d, index) => (
-            <TouchableOpacity
-              key={index}
-              style={[
-                styles.option,
-                selectedDateIndex === index && styles.selectedOption,
-              ]}
-              onPress={() => handleSelectionChange("date", index)}
-            >
-              <Text style={styles.optionText}>{d.label}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        <Text style={styles.leftAlignedTitle}>NUMBER OF GUESTS</Text>
-        <View style={styles.selectionRow}>
-          {[1, 2, 3, 4, 5, 6].map((num) => (
-            <TouchableOpacity
-              key={num}
-              style={[
-                styles.option,
-                selectedGuests === num && styles.selectedOption,
-              ]}
-              onPress={() => handleSelectionChange("guests", num)}
-            >
-              <Text style={styles.optionText}>{num}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        <Text style={styles.leftAlignedTitle}>AVAILABILITY TIMES</Text>
-        <View style={styles.selectionRow}>
-          {generateTimeSlots().map((time) => (
-            <TouchableOpacity
-              key={time}
-              style={[
-                styles.option,
-                selectedTime === time && styles.selectedOption,
-              ]}
-              onPress={() => handleSelectionChange("time", time)}
-            >
-              <Text style={styles.optionText}>{time}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+      <ScrollView style={styles.innerContainer}>
+        <SelectionSection
+          title="DATE OF RESERVATION"
+          options={dateOptions}
+          selected={selectedDateIndex}
+          onSelect={(i) => handleSelectionChange("date", i)}
+          expanded={expandDates}
+          toggleExpand={() => setExpandDates(!expandDates)}
+        />
+        <SelectionSection
+          title="NUMBER OF GUESTS"
+          options={[1, 2, 3, 4, 5, 6]}
+          selected={selectedGuests}
+          onSelect={(i) => handleSelectionChange("guests", i)}
+          expanded={expandGuests}
+          toggleExpand={() => setExpandGuests(!expandGuests)}
+        />
+        <SelectionSection
+          title="AVAILABILITY TIMES"
+          options={generateTimeSlots()}
+          selected={selectedTime}
+          onSelect={(t) => handleSelectionChange("time", t)}
+          expanded={expandTimes}
+          toggleExpand={() => setExpandTimes(!expandTimes)}
+        />
 
         {loading ? (
           <ActivityIndicator size="large" color="#8B5E3C" />
         ) : (
           <>
             {availabilityStatus === null && (
-              <TouchableOpacity
-                style={styles.button}
-                onPress={checkAvailability}
-              >
+              <TouchableOpacity style={styles.button} onPress={checkAvailability}>
                 <Text style={styles.buttonText}>Check Availability</Text>
               </TouchableOpacity>
             )}
             {availabilityStatus === "nodata" && (
               <View style={styles.card}>
-                <Text style={styles.noAvailability}>
-                  No availability found on this date.
-                </Text>
+                <Text style={styles.noAvailability}>No availability found on this date.</Text>
               </View>
             )}
-
             {availabilityStatus === "unavailable" && (
               <View style={styles.card}>
-                <Text style={styles.infoMessage}>
-                  This time is unavailable. Please choose another time.
-                </Text>
-
+                <Text style={styles.infoMessage}>This time is unavailable. Please choose another time.</Text>
                 {earliestAvailable ? (
                   <Text style={styles.earliestInfo}>
-                    Earliest available time on this day:{" "}
-                    <Text style={{ fontWeight: "bold" }}>
-                      {earliestAvailable}
-                    </Text>
+                    Earliest available: <Text style={{ fontWeight: "bold" }}>{earliestAvailable}</Text>
                   </Text>
                 ) : (
                   <Text style={styles.noAvailability}>No availability.</Text>
                 )}
               </View>
             )}
-
             {availabilityStatus === "available" && (
-              <>
-                <View style={styles.card}>
-                  <Text style={styles.infoMessage}>
-                    This time is available!
-                  </Text>
-                </View>
-
-                <TouchableOpacity
-                  style={styles.addMenuButton}
-                  onPress={() => {
-                    saveReservationData();
-                    navigation.navigate("MenuScreen", { id });
-                    console.log(
-                      "Navigating to MenuScreen with Restaurant ID:",
-                      id
-                    );
-                  }}
-                >
-                  <Text style={styles.addMenuButtonText}>ADD TO MENU</Text>
-                </TouchableOpacity>
-              </>
+              <TouchableOpacity
+                style={styles.addMenuButton}
+                onPress={saveReservationData}
+              >
+                <Text style={styles.addMenuButtonText}>ADD TO MENU</Text>
+              </TouchableOpacity>
             )}
           </>
         )}
-      </View>
+      </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "black", alignItems: "center" },
-  innerContainer: { width: "90%", paddingVertical: 20 },
+  container: { flex: 1, backgroundColor: "#000" },
+  headerContainer: {
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1,
+    marginTop: 1,
+  },
+  innerContainer: {
+    paddingHorizontal: 16,
+    paddingVertical: 20,
+  },
   leftAlignedTitle: {
     color: "white",
-    fontSize: 18,
+    fontSize: 14,
     fontWeight: "bold",
-    marginVertical: 10,
-    textAlign: "left",
+    marginBottom: 10,
   },
-  selectionRow: {
+  scrollSection: {
+    marginBottom: 20,
+  },
+  optionGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 10,
-    justifyContent: "space-between",
-    marginVertical: 10,
   },
-  option: {
-    padding: 10,
-    borderRadius: 8,
-    backgroundColor: "#3A3A3A",
+  optionCard: {
+    width: "30%",
+    height: 50,
+    justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#3A3A3A",
+    borderRadius: 10,
     marginBottom: 10,
-    minWidth: "30%",
   },
-  selectedOption: { backgroundColor: "#8B5E3C" },
-  optionText: { color: "white", fontSize: 14, textAlign: "center" },
+  optionText: {
+    color: "white",
+    fontSize: 12,
+    textAlign: "center",
+  },
+  selectedOption: {
+    backgroundColor: "#A87729",
+  },
+  showAllButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 1,
+  },
+  showAllText: {
+    color: "#A87729",
+    fontSize: 12,
+    marginLeft: 6,
+  },
   button: {
-    backgroundColor: "#8B5E3C",
+    backgroundColor: "#A87729",
     padding: 15,
     borderRadius: 10,
-    marginTop: 20,
     alignItems: "center",
   },
-  buttonText: { color: "black", fontSize: 18, fontWeight: "bold" },
+  buttonText: { color: "black", fontSize: 14, fontWeight: "bold" },
   card: {
     backgroundColor: "#333",
     padding: 15,
@@ -300,59 +289,36 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     alignItems: "center",
   },
-  errorMessage: {
-    color: "red",
-    fontSize: 16,
-    textAlign: "center",
-    fontWeight: "bold",
-  },
-  suggestion: {
-    color: "white",
-    fontSize: 14,
-    textAlign: "center",
-    marginTop: 5,
-  },
   infoMessage: {
     color: "white",
-    fontSize: 16,
+    fontSize: 12,
     textAlign: "center",
     marginVertical: 10,
   },
-  addMenuButton: {
-    marginTop: 16,
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    backgroundColor: "red",
-    borderRadius: 10,
-    alignItems: "center",
+  earliestInfo: {
+    marginTop: 8,
+    color: "#aaa",
+    fontStyle: "italic",
+    textAlign: "center",
   },
+  noAvailability: {
+    marginTop: 8,
+    color: "gray",
+    textAlign: "center",
+  },
+  addMenuButton: {
+  marginTop: 2,
+  marginBottom: 30, // 👈 Add this line
+  paddingVertical: 12,
+  paddingHorizontal: 24,
+  backgroundColor: "#E63946",
+  borderRadius: 10,
+  alignItems: "center",
+},
 
   addMenuButtonText: {
     color: "white",
     fontSize: 16,
     fontWeight: "bold",
   },
-
-  earliestInfo: {
-    marginTop: 8,
-    color: "#555",
-    fontStyle: "italic",
-    textAlign: "center",
-  },
-
-  noAvailability: {
-    marginTop: 8,
-    color: "gray",
-    textAlign: "center",
-  },
-
-  addButton: {
-    padding: 15,
-    borderRadius: 10,
-    marginTop: 40,
-    width: "70%",
-    alignItems: "center",
-    alignSelf: "center",
-  },
-  addButtonText: { color: "white", fontSize: 16, fontWeight: "bold" },
 });

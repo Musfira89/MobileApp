@@ -106,94 +106,92 @@ const EnhancedCheckoutScreen = ({ route, navigation }) => {
     <View style={styles.container}>
       <Header onBackPress={handleBackPress} />
 
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Text style={styles.checkoutHeader}>Total Menu Items + Tax</Text>
-        <Text style={styles.checkoutAmount}>
-          Rs. {totalAmount?.toLocaleString()}
-        </Text>
+     <ScrollView contentContainerStyle={styles.scrollContent}>
+  <Text style={styles.checkoutHeader}>Total Menu Items + Tax</Text>
+  <Text style={styles.checkoutAmount}>
+    Rs. {totalAmount?.toLocaleString()}
+  </Text>
 
-        <Text style={styles.label}>Email</Text>
-        <TextInput
-          style={styles.input}
-          keyboardType="email-address"
-          value={email}
-          onChangeText={setEmail}
-          autoCorrect={false}
-          autoComplete="off"
-          textContentType="none"
-        />
+  {/* Personal Info Card */}
+  <View style={styles.sectionCard}>
+    <Text style={styles.sectionTitle}>Your Details</Text>
 
-        <Text style={styles.label}>Full Name</Text>
-        <TextInput
-          style={styles.input}
-          value={fullName}
-          onChangeText={setFullName}
-          autoCorrect={false}
-          autoComplete="off"
-          textContentType="none"
-        />
+    <Text style={styles.label}>Email</Text>
+    <TextInput
+      style={styles.input}
+      keyboardType="email-address"
+      value={email}
+      onChangeText={setEmail}
+    />
 
-        <Text style={styles.label}>Phone Number</Text>
-        <TextInput
-          style={styles.input}
-          keyboardType="phone-pad"
-          value={phoneNumber}
-          onChangeText={setPhoneNumber}
-          autoCorrect={false}
-          autoComplete="off"
-          textContentType="none"
-        />
+    <Text style={styles.label}>Full Name</Text>
+    <TextInput
+      style={styles.input}
+      value={fullName}
+      onChangeText={setFullName}
+    />
 
-        <Text style={styles.sectionTitle}>Payment Method</Text>
+    <Text style={styles.label}>Phone Number</Text>
+    <TextInput
+      style={styles.input}
+      keyboardType="phone-pad"
+      value={phoneNumber}
+      onChangeText={setPhoneNumber}
+    />
 
-        <View style={styles.methodRow}>
-          {paymentMethods.map((method) => (
-            <TouchableOpacity
-              key={method.id}
-              style={[
-                styles.methodButton,
-                selectedMethod === method.id && styles.methodButtonSelected,
-              ]}
-              onPress={() => toggleMethod(method.id)}
-            >
-              <Image source={method.icon} style={styles.icon} />
-              {/* <Text style={styles.methodLabel}>{method.type}</Text> */}
-            </TouchableOpacity>
-          ))}
-        </View>
+    <Text style={styles.label}>Country</Text>
+    <TextInput
+      style={styles.input}
+      value={country}
+      onChangeText={setCountry}
+    />
+  </View>
 
-        {selectedMethod && (
-          <View style={{ marginTop: 20 }}>
-            <TextInput
-              style={styles.input}
-              placeholder={`Enter ${
-                paymentMethods.find((m) => m.id === selectedMethod)?.type
-              } details`}
-              value={otherMethodDetails}
-              onChangeText={setOtherMethodDetails}
-            />
-          </View>
-        )}
+  {/* Payment Method Card */}
+  <View style={styles.sectionCard}>
+    <Text style={styles.sectionTitle}>Select Payment Method</Text>
+<View style={styles.methodRow}>
+  {paymentMethods.map((method) => (
+    <TouchableOpacity
+      key={method.id}
+      style={[
+        styles.methodButton,
+        selectedMethod === method.id && styles.methodButtonSelected,
+      ]}
+      onPress={() => toggleMethod(method.id)}
+    >
+      <Image source={method.icon} style={styles.icon} />
+      <Text style={styles.methodLabel}>{method.type}</Text>
+    </TouchableOpacity>
+  ))}
+</View>
 
-        <Text style={styles.label}>Country</Text>
-        <TextInput
-          style={styles.input}
-          value={country}
-          onChangeText={setCountry}
-        />
 
-        <TouchableOpacity
-          style={styles.payButton}
-          onPress={handlePayment}
-          disabled={loading}
-        >
-          {loading ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={styles.payButtonText}>Pay Now</Text>
-          )}
-        </TouchableOpacity>
-      </ScrollView>
+    {selectedMethod && (
+      <TextInput
+        style={[styles.input, { marginTop: 20 }]}
+        placeholder={`Enter ${
+          paymentMethods.find((m) => m.id === selectedMethod)?.type
+        } details`}
+        value={otherMethodDetails}
+        onChangeText={setOtherMethodDetails}
+      />
+    )}
+  </View>
+
+  <TouchableOpacity
+    style={styles.payButton}
+    onPress={handlePayment}
+    disabled={loading}
+  >
+    {loading ? (
+      <ActivityIndicator color="#fff" />
+    ) : (
+      <Text style={styles.payButtonText}>Pay Now</Text>
+    )}
+  </TouchableOpacity>
+</ScrollView>
+
 
       <Navbar navigation={navigation} />
     </View>
@@ -201,101 +199,116 @@ const EnhancedCheckoutScreen = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f9f9f9", paddingHorizontal: 24 },
-  scrollContent: { paddingBottom: 80 },
-  checkoutHeader: {
-    fontSize: 20,
-    color: "#666",
-    marginTop: 80,
-    textAlign: "center",
+  container: {
+    flex: 1,
+    backgroundColor: "#F2F4F6",
+    paddingHorizontal: 20,
+  },
+  scrollContent: {
+    paddingBottom: 120,
+  },
+   headerContainer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1,
   },
   checkoutAmount: {
-    fontSize: 48,
-    fontWeight: "bold",
-    color: "#000",
+    fontSize: 25,
+    fontWeight: "700",
+    color: "#111",
     textAlign: "center",
-    marginBottom: 50,
+    marginBottom: 30,
+  },
+  sectionCard: {
+    backgroundColor: "#ffffff",
+    padding: 20,
+    borderRadius: 18,
+    marginBottom: 25,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  sectionTitle: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#333",
+    marginBottom: 18,
   },
   label: {
-    fontWeight: "600",
-    color: "#555",
-    marginTop: 18,
-    fontSize: 18,
+    fontWeight: "500",
+    color: "#333",
+    marginBottom: 6,
+    fontSize: 14,
+    marginTop: 10,
   },
   input: {
     borderWidth: 1,
     borderColor: "#e0e0e0",
-    padding: 16,
-    borderRadius: 12,
-    fontSize: 18,
-    backgroundColor: "#fff",
-    marginTop: 8,
-    color: "#333",
+    padding: 14,
+    borderRadius: 14,
+    fontSize: 12,
+    backgroundColor: "#FDFDFD",
+    marginBottom: 12,
+    color: "#222",
   },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#555",
-    marginVertical: 25,
-  },
-  methodContainer: { marginBottom: 16 },
-  paymentMethod: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 16,
-    borderWidth: 1,
-    borderColor: "#e0e0e0",
-    borderRadius: 12,
-    backgroundColor: "#fff",
-  },
-  paymentType: {
-    fontSize: 18,
-    fontWeight: "500",
-    color: "#333",
-  },
-  methodDetails: { marginTop: 15 },
-  payButton: {
-    backgroundColor: "#0056d2",
-    paddingVertical: 18,
-    borderRadius: 12,
-    marginTop: 30,
-    marginBottom: 40,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
-    elevation: 5,
-  },
-  payButtonText: { color: "#fff", fontSize: 22, fontWeight: "bold" },
   methodRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 10,
+    marginTop: 6,
   },
-
   methodButton: {
     flex: 1,
     alignItems: "center",
-    padding: 12,
+    paddingVertical: 14,
     borderWidth: 1,
     borderColor: "#ccc",
-    borderRadius: 12,
-    marginHorizontal: 4,
-    backgroundColor: "#fff",
+    borderRadius: 14,
+    marginHorizontal: 5,
+    backgroundColor: "#ffffff",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.03,
+    shadowRadius: 2,
   },
-
   methodButtonSelected: {
-    borderColor: "#0056d2",
-    backgroundColor: "#e6f0ff",
+    borderColor: "#2D9CDB",
+    backgroundColor: "#EAF4FF",
   },
-
   icon: {
-    width: 100,
-    height: 90,
+    width: 70,
+    height: 60,
     resizeMode: "contain",
   },
+  methodLabel: {
+    fontSize: 12,
+    color: "#333",
+    marginTop: 6,
+    fontWeight: "500",
+  },
+  payButton: {
+    backgroundColor: "#2D9CDB",
+    paddingVertical: 16,
+    borderRadius: 16,
+    marginTop: 10,
+    marginBottom: 40,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 4,
+  },
+  payButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
+    letterSpacing: 0.5,
+  },
 });
+
 
 export default EnhancedCheckoutScreen;
